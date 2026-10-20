@@ -19,7 +19,8 @@ from apscheduler.triggers.date import DateTrigger
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler)
 
 from bot import banco, premios, recuento, reloj, votacion
-from config import CASA, CIERRA_EL, TELEGRAM_TOKEN, lo_que_falta
+from config import (CASA, CIERRA_EL, DATABASE_URL, TELEGRAM_TOKEN,
+                    lo_que_falta)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -70,6 +71,14 @@ async def main() -> None:
         logger.warning("Falta por configurar: " + ", ".join(falta))
     if not TELEGRAM_TOKEN:
         raise SystemExit("Sin TELEGRAM_TOKEN no hay bot. Se pone en Railway.")
+    # Sin direccion, asyncpg prueba la base de esta misma maquina y suelta
+    # cuarenta lineas de traza sobre 127.0.0.1:5432 que no dicen que falta
+    # una variable. Mejor pararse aqui y decirlo en una linea.
+    if not DATABASE_URL:
+        raise SystemExit(
+            "Sin DATABASE_URL no hay donde guardar los votos. En Railway no "
+            "la hereda el bot al crear la base: se pone a mano en sus "
+            "variables, como ${{Postgres.DATABASE_URL}}.")
 
     await banco.abrir()
     logger.info(f"{premios.cuantas()} categorías, "
