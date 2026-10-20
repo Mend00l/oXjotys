@@ -1,0 +1,167 @@
+"""Lo que no puede romperse en la votacion.
+
+Son veintiuna categorias y 168 nominados: lo que se comprueba aqui es
+que nadie se pierda por el camino --que la paginacion cuadre, que quien
+lo deje a medias retome por lo que le falta y que un boton viejo no
+cuele un voto que no es--.
+"""
+
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import config  # noqa: E402
+from bot import premios, votacion  # noqa: E402
+
+
+# --- la lista -------------------------------------------------------------
+
+def test_estan_las_veintiuna_categorias():
+    """Si alguien toca premios.json y se deja media lista, se ve aqui y no
+    en mitad de la votacion."""
+    assert premios.cuantas() == 21
+    assert sum(len(c["nominados"]) for c in premios.CATEGORIAS) == 168
+
+
+def test_ninguna_categoria_se_queda_sin_nominados():
+    for indice in range(premios.cuantas()):
+        assert premios.categoria(indice)["nominados"], premios.nombre_de(indice)
+
+
+def test_un_nominado_que_no_existe_no_se_inventa():
+    """El boton puede venir de un mensaje viejo: si la lista cambio, ese
+    numero ya no apunta a lo mismo y hay que decirlo, no votar otra cosa."""
+    assert premios.nominado(0, 999) is None
+    assert premios.nominado(999, 0) is None
+
+
+# --- la paginacion --------------------------------------------------------
+
+def test_la_mayoria_de_categorias_caben_en_una_pantalla():
+    """**El motivo de los ocho por pagina.** Casi todas tienen seis
+    nominados: con cinco habia que pasar pagina en todas."""
+    de_una = sum(1 for c in premios.CATEGORIAS
+                 if len(c["nominados"]) <= config.POR_PAGINA)
+    assert de_una >= 12, "con este tamaño de pagina se pasa pagina de mas"
+
+
+def test_la_mas_larga_no_pasa_de_tres_paginas():
+    mayor = max(len(c["nominados"]) for c in premios.CATEGORIAS)
+    assert votacion._paginas(mayor) <= 3
+
+
+def test_una_sola_pagina_no_lleva_flechas():
+    """Unas flechas que no llevan a ningun sitio confunden."""
+    corta = next(i for i, c in enumerate(premios.CATEGORIAS)
+                 if len(c["nominados"]) <= config.POR_PAGINA)
+    filas = votacion._teclado(corta, 0, None).inline_keyboard
+    rotulos = [b.text for fila in filas for b in fila]
+    assert not any(r in ("‹", "›") for r in rotulos)
+
+
+def test_la_primera_pagina_no_tiene_flecha_atras():
+    larga = max(range(premios.cuantas()),
+                key=lambda i: len(premios.categoria(i)["nominados"]))
+    rotulos = [b.text for fila in votacion._teclado(larga, 0, None).inline_keyboard
+               for b in fila]
+    assert "›" in rotulos and "‹" not in rotulos
+
+
+def test_la_ultima_pagina_no_tiene_flecha_adelante():
+    larga = max(range(premios.cuantas()),
+                key=lambda i: len(premios.categoria(i)["nominados"]))
+    ultima = votacion._paginas(len(premios.categoria(larga)["nominados"])) - 1
+    rotulos = [b.text for fila in votacion._teclado(larga, ultima, None).inline_keyboard
+               for b in fila]
+    assert "‹" in rotulos and "›" not in rotulos
+
+
+def test_todos_los_nominados_salen_en_alguna_pagina():
+    """Si la cuenta de paginas y el corte no cuadran, hay nominados a los
+    que no se puede votar y nadie se entera."""
+    for indice, cat in enumerate(premios.CATEGORIAS):
+        vistos = []
+        for pagina in range(votacion._paginas(len(cat["nominados"]))):
+            for fila in votacion._teclado(indice, pagina, None).inline_keyboard:
+                for boton in fila:
+                    if (boton.callback_data or "").startswith("v:"):
+                        vistos.append(int(boton.callback_data.split(":")[3]))
+        assert sorted(vistos) == list(range(len(cat["nominados"]))), \
+            premios.nombre_de(indice)
+
+
+def test_lo_votado_sale_marcado():
+    elegido = premios.categoria(0)["nominados"][0]
+    filas = votacion._teclado(0, 0, elegido).inline_keyboard
+    rotulos = [b.text for fila in filas for b in fila]
+    assert any(r.startswith(votacion.MARCA) for r in rotulos)
+
+
+def test_lo_que_viaja_en_un_boton_cabe_en_telegram():
+    """Telegram solo admite 64 caracteres en el dato de un boton."""
+    for indice in range(premios.cuantas()):
+        for pagina in range(votacion._paginas(
+                len(premios.categoria(indice)["nominados"]))):
+            for fila in votacion._teclado(indice, pagina, None).inline_keyboard:
+                for boton in fila:
+                    assert len(boton.callback_data.encode()) <= 64
+
+
+# --- por donde se sigue ----------------------------------------------------
+
+async def test_se_retoma_por_lo_que_falta_y_no_por_donde_se_dejo(monkeypatch):
+    """Quien vota tres, se cansa y vuelve dias despues tiene que caer en la
+    cuarta. Y si dejo huecos atras, se vuelve a ellos dando la vuelta: si
+    no, esa votacion se queda a medias para siempre."""
+    async def _votos(usuario):
+        return {0: "a", 2: "b"}
+
+    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
+    assert await votacion._siguiente_sin_votar(1, 0) == 1
+    assert await votacion._siguiente_sin_votar(1, 3) == 3
+    # Desde la ultima, da la vuelta y vuelve al hueco de atras.
+    assert await votacion._siguiente_sin_votar(1, 20) == 20
+
+
+async def test_cuando_estan_todas_no_hay_siguiente(monkeypatch):
+    async def _votos(usuario):
+        return {i: "x" for i in range(premios.cuantas())}
+
+    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
+    assert await votacion._siguiente_sin_votar(1, 0) is None
+
+
+# --- el cierre -------------------------------------------------------------
+
+def test_antes_de_la_fecha_esta_abierta(monkeypatch):
+    monkeypatch.setattr(votacion, "CIERRA_EL",
+                        votacion.ahora() + timedelta(days=1))
+    assert votacion.cerrada() is False
+
+
+def test_pasada_la_fecha_esta_cerrada(monkeypatch):
+    monkeypatch.setattr(votacion, "CIERRA_EL",
+                        votacion.ahora() - timedelta(minutes=1))
+    assert votacion.cerrada() is True
+
+
+def test_sin_fecha_no_cierra_sola(monkeypatch):
+    monkeypatch.setattr(votacion, "CIERRA_EL", None)
+    assert votacion.cerrada() is False
+
+
+def test_la_fecha_se_lee_en_hora_de_casa():
+    """Railway corre en UTC: sin zona, «el 9 a medianoche» cerraria a las
+    dos de la madrugada del 10 para quien vota desde España."""
+    leida = config._cuando_cierra("2026-11-09 23:59")
+    assert leida == datetime(2026, 11, 9, 23, 59, tzinfo=config.CASA)
+    assert config._cuando_cierra("2026-11-09").hour == 0
+    assert config._cuando_cierra("lo que sea") is None
+    assert config._cuando_cierra("") is None
+
+
+def test_los_grupos_se_leen_como_los_de_los_otros_bots():
+    assert config._grupos("-1002064045581, @otro") == ["-1002064045581", "@otro"]
+    assert config._grupos("") == []

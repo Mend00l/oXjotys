@@ -1,0 +1,31 @@
+{
+  "fuente": "https://file770.com/golden-joystick-awards-2026-shortlist/ (12-oct-2026)",
+  "notas": [
+    "44 edicion. La votacion oficial cierra el 23-oct-2026.",
+    "Ultimate Game of the Year se anuncia el 26-oct y se vota aparte.",
+    "Los ganadores se anuncian el 11-nov-2026."
+  ],
+  "categorias": [
+    {"nombre": "Juego del Año · PC", "nominados": ["Big Walk", "Crimson Desert", "Escape from Tarkov", "Esoteric Ebb", "MECCHA CHAMELEON", "Mewgenics", "Order of the Sinking Star", "STAR WARS Zero Company", "The Blood of Dawnwalker", "Valheim"]},
+    {"nombre": "Juego del Año · Consola", "nominados": ["007 First Light", "Fire Emblem: Fortune's Weave", "Forza Horizon 6", "LEGO Batman: Legacy of the Dark Knight", "Nioh 3", "Onimusha: Way of the Sword", "Pokémon Pokopia", "PRAGMATA", "Resident Evil Requiem", "SAROS"]},
+    {"nombre": "Mejor narrativa", "nominados": ["007 First Light", "Dispatch", "Fire Emblem: Fortune's Weave", "SILENT HILL: Townfall", "The Blood of Dawnwalker", "ZERO PARADES: For Dead Spies"]},
+    {"nombre": "Mejor multijugador", "nominados": ["ARC Raiders", "Big Walk", "Marathon", "MARVEL Tōkon: Fighting Souls", "MECCHA CHAMELEON", "Valheim"]},
+    {"nombre": "Mejor diseño visual", "nominados": ["CONTROL Resonant", "Forza Horizon 6", "Orbitals", "Phonopolis", "Resonance: A Plague Tale Legacy", "SAROS"]},
+    {"nombre": "Mejor banda sonora", "nominados": ["007 First Light", "Crimson Desert", "Dispatch", "Lumines Arise", "Mewgenics", "Mixtape"]},
+    {"nombre": "Mejor diseño de audio", "nominados": ["Big Walk", "Marathon", "Onimusha: Way of the Sword", "Rhythm Heaven Groove", "SAROS", "STAR WARS: Galactic Racer"]},
+    {"nombre": "Mejor juego indie", "nominados": ["Big Walk", "Denshattack!", "Esoteric Ebb", "Mixtape", "Mouse: P.I. for Hire", "Order of the Sinking Star", "REANIMAL", "Sovereign Tower", "Titanium Court", "Valheim"]},
+    {"nombre": "Mejor indie autoeditado", "nominados": ["Cairn", "Fields of Mistria", "MECCHA CHAMELEON", "Mewgenics", "Mina the Hollower", "Perfect Tides: Station to Station", "Phonopolis", "Rhythm Doctor", "The Incident at Galley House", "Vampire Crawlers"]},
+    {"nombre": "Estudio del año", "nominados": ["CAPCOM", "Frogwares", "House House", "IO Interactive", "Nintendo EPD", "SQUARE ENIX"]},
+    {"nombre": "Mejor remake o remaster", "nominados": ["Assassin's Creed Black Flag Resynced", "Gothic 1 Remake", "METAL GEAR SOLID: MASTER COLLECTION Vol.2", "Star Fox", "The Witcher 3: Wild Hunt Remastered", "Trails in the Sky 2nd Chapter"]},
+    {"nombre": "Mejor expansión", "nominados": ["Cult of the Lamb: Woolhaven", "DAVE THE DIVER: In the Jungle", "DOOM: The Dark Ages · Revelations", "Quake: Dawn of the Machine", "The Alters: Last Variable", "World of Warcraft: Midnight"]},
+    {"nombre": "Mejor acceso anticipado", "nominados": ["Dead as Disco", "MENACE", "skate.", "Slay the Spire 2", "Subnautica 2", "WARDOGS"]},
+    {"nombre": "Mejor intérprete principal", "nominados": ["Aaron Paul · Dispatch", "Angela Sant'Albano · Resident Evil Requiem", "Anna Demetriou · Resonance: A Plague Tale Legacy", "Liam McIntyre · Marvel's Wolverine", "Patrick Gibson · 007 First Light", "Will de Renzy-Martin · The Blood of Dawnwalker"]},
+    {"nombre": "Mejor intérprete de reparto", "nominados": ["Frankie Kevich · CONTROL Resonant", "Grace Saif · PRAGMATA", "Lennie James · 007 First Light", "Terry O'Quinn · SILENT HILL: Townfall", "Troy Baker · Marvel's Wolverine", "Vic Michaelis · STAR WARS Zero Company"]},
+    {"nombre": "Mejor adaptación", "nominados": ["Devil May Cry (T2)", "Exit 8", "Fallout (T2)", "Iron Lung", "Mortal Kombat II", "Resident Evil"]},
+    {"nombre": "Mejor tráiler", "nominados": ["Battlefield 6 x Top Gun", "Big Walk · fecha de salida", "Cairn · lanzamiento", "MOUSE: P.I. For Hire · lanzamiento", "Prove You're Human · anuncio", "Resident Evil Requiem · Evil Has Always Had A Name"]},
+    {"nombre": "Mejor hardware", "nominados": ["Logitech G PRO X2 SUPERSTRIKE", "Razer Viper V4 Pro", "Secretlab ATLAS", "Sony INZONE M10S II", "Steam Controller", "Turtle Beach Stealth Pro II"]},
+    {"nombre": "Seguimos jugando · PC y consola", "nominados": ["Apex Legends", "Call of Duty: Warzone", "Fortnite", "GTA Online", "HELLDIVERS 2", "HITMAN World of Assassination", "Minecraft", "No Man's Sky", "Palworld", "The Elder Scrolls Online", "Warframe", "World of Warcraft"]},
+    {"nombre": "Seguimos jugando · Móvil", "nominados": ["Balatro", "Genshin Impact", "Honkai: Star Rail", "MARVEL SNAP", "MONOPOLY GO!", "NTE: Neverness to Everness", "Old School RuneScape", "Pokémon GO", "Roblox", "Sky: Children of the Light", "Rainbow Six Mobile", "Wuthering Waves"]},
+    {"nombre": "El más esperado", "nominados": ["Alien: Isolation 2", "ANANTA", "Black Myth: Zhong Kui", "EXODUS", "Fable", "FINAL FANTASY VII REVELATION", "God of War Laufey", "Intergalactic: The Heretic Prophet", "KINGDOM HEARTS IV", "METRO 2039", "NO LAW", "Persona 6", "Resident Evil Veronica", "STRANGER THAN HEAVEN", "Stuntman: Hollywood", "The Expanse: Osiris Reborn", "The Witcher 4", "Tides of Annihilation", "Tomb Raider: Legacy of Atlantis", "Total War: WARHAMMER 40,000"]}
+  ]
+}
