@@ -1,6 +1,6 @@
 # Votación de los Golden Joystick
 
-Bot de Telegram para que la gente de los grupos vote los premios. Se
+Bot de Telegram (@oXjotybot) para que la gente de los grupos vote los premios. Se
 vota **en privado**, una categoría cada vez, a botonazos.
 
 **21 categorías y 168 nominados**, de la edición de 2026. La votación
