@@ -1,0 +1,11 @@
+# Solo para `python -m herramientas.ganadores sheet`, y **a proposito
+# fuera del requirements.txt de arriba**: el bot no habla con Google, asi
+# que estas dos no suben a Railway y la clave de la cuenta de servicio no
+# tiene que estar en un servicio mas.
+#
+# Mismas versiones que ofertasXbot, el publicador y Marcy, que escriben
+# en el mismo documento. gspread fijada por algo que ya paso: la 6 cambio
+# el orden de los argumentos de `update` y con el orden viejo escribe
+# donde no toca.
+gspread==6.2.1
+google-auth==2.62.0

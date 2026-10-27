@@ -46,6 +46,8 @@ esté, se une.
 |---|---|---|
 | `/votar` o `/start` | cualquiera | empieza o retoma la votación |
 | `/ranking` | cualquiera | el resultado, **a partir del 11 de noviembre** |
+| `/puntos` | cualquiera, en privado | sus aciertos, categoría por categoría |
+| `/clasificacion` | cualquiera | quién lleva más aciertos |
 | `/recuento` | solo Edu | cómo va, categoría por categoría |
 | `/estado` | solo Edu | si está abierta y cuánta gente ha votado |
 
@@ -68,6 +70,41 @@ lado.
 
 Las categorías **«nuestras»** las elige Edu y el bot no las vota ni las
 cuenta: se escriben en el mensaje al publicarlo.
+
+## Los aciertos
+
+Un punto por cada categoría en la que lo votado coincide con lo que ganó
+de verdad en los Golden Joystick. Los ganadores de verdad **no los vota
+nadie**: se apuntan a mano el día de la gala.
+
+    python -m herramientas.ganadores ver            # la lista, numerada
+    python -m herramientas.ganadores poner 0:2 5:1  # en seco
+    python -m herramientas.ganadores poner 0:2 --si # de verdad
+    python -m herramientas.ganadores sheet --si     # al Sheet
+
+**Se eligen por número, nunca escribiendo el nombre.** `0:2` es «en la
+categoría 0, el nominado 2», y el texto lo saca el script del propio
+`premios.json`. Escrito a mano, un acento de diferencia dejaría de casar
+con los votos de la gente **y no daría ningún error**: simplemente nadie
+acertaría esa categoría y nunca se sabría por qué.
+
+**Sin `--si` no escribe nada**, sólo enseña lo que haría. Y un ganador se
+puede corregir: volver a ponerlo sustituye al anterior.
+
+**Una categoría sin ganador apuntado no cuenta como fallo.** Los Golden
+Joystick no cantan los premios todos a la vez, así que durante la gala el
+marcador es parcial a propósito.
+
+`/puntos` y `/clasificacion` están cerrados hasta que haya algún ganador
+apuntado. La puerta es ésa y no una fecha: si no se sabe quién ganó, un
+cero no significa «fallaste todas», significa «todavía no».
+
+**El bot no habla con Google.** El vuelco al Sheet —pestaña `oXJOTYs` del
+mismo documento que los votos de ofertasXbot— se hace desde aquí, con
+`pip install -r herramientas/requirements.txt` y las variables
+`GOOGLE_SHEETS_ID` y `GOOGLE_SHEETS_CREDENTIALS` en el entorno. Así la
+clave de la cuenta de servicio no tiene que estar en un servicio más de
+Railway.
 
 ## Montarlo en local
 

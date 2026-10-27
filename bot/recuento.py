@@ -73,12 +73,12 @@ async def recuento(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     texto = await _texto_del_recuento(completo=True)
     # Telegram corta en 4096: si no cabe, se parte por categorias.
-    for trozo in _en_trozos(texto):
+    for trozo in en_trozos(texto):
         await update.effective_message.reply_text(
             trozo, parse_mode=ParseMode.HTML)
 
 
-def _en_trozos(texto: str, tope: int = 3500) -> list[str]:
+def en_trozos(texto: str, tope: int = 3500) -> list[str]:
     """Parte por lineas, sin cortar una categoria por la mitad."""
     trozos, actual = [], ""
     for linea in texto.split("\n"):
@@ -101,7 +101,7 @@ async def avisar_del_cierre(bot: Bot) -> None:
                 "Esto es lo que ha salido. Si quieres publicarlo, dale al "
                 "botón; si no, aquí se queda.\n\n")
     texto = cabecera + await _texto_del_recuento(completo=False)
-    trozos = _en_trozos(texto)
+    trozos = en_trozos(texto)
     for numero, trozo in enumerate(trozos):
         ultimo = numero == len(trozos) - 1
         await bot.send_message(
@@ -124,7 +124,7 @@ async def publicar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     texto = await _texto_del_recuento(completo=False)
     try:
-        for trozo in _en_trozos(texto):
+        for trozo in en_trozos(texto):
             await context.bot.send_message(donde, trozo,
                                            parse_mode=ParseMode.HTML)
     except Exception as e:
@@ -155,7 +155,7 @@ async def ranking(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             f"verdad en los Golden Joystick Awards.")
         return
     texto = await _texto_del_recuento(completo=False)
-    for trozo in _en_trozos(texto):
+    for trozo in en_trozos(texto):
         await mensaje.reply_text(trozo, parse_mode=ParseMode.HTML)
 
 

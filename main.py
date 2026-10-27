@@ -8,6 +8,7 @@ en los grupos de Edu. Lo que hace cada pieza:
     bot/votacion.py  el paso a paso y los botones
     bot/banco.py     donde se guardan los votos
     bot/recuento.py  el recuento y el cierre, solo para Edu
+    bot/aciertos.py  los puntos: un acierto por categoria clavada
 """
 
 import asyncio
@@ -20,7 +21,8 @@ from telegram.error import Conflict
 from telegram.ext import (Application, CallbackQueryHandler, ChatMemberHandler,
                           CommandHandler)
 
-from bot import banco, premios, recuento, reloj, socios, votacion
+from bot import (aciertos, banco, premios, recuento, reloj, socios,
+                 votacion)
 from config import (CASA, CIERRA_EL, DATABASE_URL, TELEGRAM_TOKEN,
                     lo_que_falta)
 
@@ -137,6 +139,8 @@ async def main() -> None:
     app.add_handler(CommandHandler("recuento", recuento.recuento))
     app.add_handler(CommandHandler("estado", recuento.estado))
     app.add_handler(CommandHandler("ranking", recuento.ranking))
+    app.add_handler(CommandHandler("puntos", aciertos.puntos))
+    app.add_handler(CommandHandler("clasificacion", aciertos.clasificacion))
     app.add_handler(CallbackQueryHandler(recuento.publicar, pattern=r"^pub:"))
     app.add_handler(CallbackQueryHandler(votacion.pulsado))
     # **`MY_CHAT_MEMBER` y no `CHAT_MEMBER`**: el primero es el bot
