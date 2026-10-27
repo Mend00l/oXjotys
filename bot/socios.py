@@ -33,8 +33,49 @@ logger = logging.getLogger(__name__)
 # `kicked` quedan fuera, que es lo que significan.
 DENTRO = {"creator", "administrator", "member", "restricted"}
 
+# Y los que significan que no esta. Se usa para saber si al bot lo acaban
+# de meter en un grupo o de sacar.
+FUERA = {"left", "kicked"}
+
 # telegram_id -> (si pasa, cuando se pregunto)
 _memoria: dict[int, tuple[bool, float]] = {}
+
+
+async def me_han_metido(update, context) -> None:
+    """Cuando meten al bot en un grupo, le dice a Edu su numero.
+
+    **El numero de un grupo no se ve por ningun lado** --ni en la ficha ni
+    en el enlace de invitacion-- y es lo unico que hace falta para
+    `GRUPOS`. Y preguntarselo a Telegram tampoco vale: para preguntar por
+    un grupo el bot tiene que estar ya dentro, que es justo lo que se esta
+    montando. Asi que lo canta el bot al entrar.
+
+    Pasa el 27-oct-2026: para abrir la votacion a un grupo de pruebas
+    hacia falta su numero y no habia forma comoda de sacarlo.
+    """
+    cambio = update.my_chat_member
+    chat = cambio.chat
+    if chat.type not in ("group", "supergroup") or not ADMIN_ID:
+        return
+
+    estaba = cambio.old_chat_member.status
+    esta = cambio.new_chat_member.status
+    if esta in FUERA:
+        logger.info(f"Me han sacado de «{chat.title}» ({chat.id})")
+        texto = f"👋 Me han sacado de «{chat.title}»\n<code>{chat.id}</code>"
+    elif estaba in FUERA:
+        logger.info(f"Me han metido en «{chat.title}» ({chat.id})")
+        texto = (f"✅ Me han metido en «{chat.title}»\n"
+                 f"<code>{chat.id}</code>\n\n"
+                 f"Para que su gente pueda votar, ese número va en "
+                 f"<code>GRUPOS</code>.")
+    else:
+        return
+
+    try:
+        await context.bot.send_message(ADMIN_ID, texto, parse_mode="HTML")
+    except Exception as e:
+        logger.warning(f"No pude avisar del grupo: {type(e).__name__}: {e}")
 
 
 def _reciente(usuario: int) -> bool | None:

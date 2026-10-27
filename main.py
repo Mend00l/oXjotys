@@ -17,9 +17,10 @@ import sys
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
 from telegram.error import Conflict
-from telegram.ext import (Application, CallbackQueryHandler, CommandHandler)
+from telegram.ext import (Application, CallbackQueryHandler, ChatMemberHandler,
+                          CommandHandler)
 
-from bot import banco, premios, recuento, reloj, votacion
+from bot import banco, premios, recuento, reloj, socios, votacion
 from config import (CASA, CIERRA_EL, DATABASE_URL, TELEGRAM_TOKEN,
                     lo_que_falta)
 
@@ -137,6 +138,12 @@ async def main() -> None:
     app.add_handler(CommandHandler("estado", recuento.estado))
     app.add_handler(CallbackQueryHandler(recuento.publicar, pattern=r"^pub:"))
     app.add_handler(CallbackQueryHandler(votacion.pulsado))
+    # **`MY_CHAT_MEMBER` y no `CHAT_MEMBER`**: el primero es el bot
+    # entrando o saliendo de un grupo, y Telegram lo manda de serie. El
+    # segundo son los demas yendo y viniendo, que no se piden --ni se
+    # reciben sin decirlo-- y aqui no hacen falta.
+    app.add_handler(ChatMemberHandler(socios.me_han_metido,
+                                      ChatMemberHandler.MY_CHAT_MEMBER))
     app.add_error_handler(se_rompio)
 
     _planificar_cierre(app)
