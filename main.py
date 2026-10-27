@@ -23,7 +23,7 @@ from telegram.ext import (Application, CallbackQueryHandler, ChatMemberHandler,
 
 from bot import (aciertos, banco, premios, recuento, reloj, socios,
                  votacion)
-from config import (CASA, CIERRA_EL, DATABASE_URL, TELEGRAM_TOKEN,
+from config import (CASA, CIERRA_EL, DATABASE_URL, GRUPOS, TELEGRAM_TOKEN,
                     lo_que_falta)
 
 logging.basicConfig(
@@ -132,6 +132,12 @@ async def main() -> None:
     logger.info(f"{premios.cuantas()} categorías, "
                 f"{sum(len(c['nominados']) for c in premios.CATEGORIAS)} "
                 f"nominados")
+    # **Que se vea en que grupos se cree que esta.** `GRUPOS` se lee al
+    # arrancar: si se cambia la variable y el servicio no reinicia, el bot
+    # sigue preguntando por el grupo viejo y por fuera no se distingue.
+    # Paso el 27-oct-2026 al abrir la votacion a la comunidad: la variable
+    # ya decia una cosa y no habia forma de saber que decia el proceso.
+    logger.info("Pueden votar los de: " + (", ".join(GRUPOS) or "NADIE"))
 
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", votacion.empezar))
