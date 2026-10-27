@@ -148,30 +148,56 @@ async def test_cuando_estan_todas_no_hay_siguiente(monkeypatch):
     assert await votacion._siguiente_sin_votar(1, 0) is None
 
 
-async def test_al_terminar_se_da_las_gracias(monkeypatch):
+def _todas():
+    return {i: "x" for i in range(premios.cuantas())}
+
+
+def test_al_terminar_se_da_las_gracias():
     """Lo que se lee tras el ultimo voto. **Contesta de paso lo que mas se
     pregunta**: cuando se sabe el ganador."""
-    async def _votos(usuario):
-        return {i: "x" for i in range(premios.cuantas())}
-
-    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
-    texto = await votacion._resumen(1)
+    texto = votacion._texto_resumen(_todas())
 
     assert "¡Gracias por participar en los oXJOTYs!" in texto
     assert "Golden Joystick Awards" in texto
     assert "hasta que cierre" in texto
 
 
-async def test_a_medias_no_se_despide(monkeypatch):
+def test_a_medias_no_se_despide():
     """Despedirse de quien va por la tercera sonaria a que ya ha acabado."""
-    async def _votos(usuario):
-        return {0: "x", 1: "y"}
-
-    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
-    texto = await votacion._resumen(1)
+    texto = votacion._texto_resumen({0: "x", 1: "y"})
 
     assert "Gracias por participar" not in texto
     assert "Seguir votando" in texto
+
+
+# --- volver a una categoria ya votada --------------------------------------
+
+def test_desde_el_resumen_se_puede_volver_a_cualquiera():
+    """**El mensaje decia que se podia cambiar el voto y no habia por
+    donde**: el resumen era solo texto y «Seguir votando» no llevaba a
+    ningun sitio con todas puestas. Ahora cada categoria es un boton."""
+    filas = votacion._teclado_resumen(_todas()).inline_keyboard
+
+    assert len(filas) == premios.cuantas(), "una fila por categoria"
+    assert [f[0].callback_data for f in filas] == [
+        f"c:{i}" for i in range(premios.cuantas())]
+    assert all(len(f) == 1 for f in filas), "una por fila, que los nombres son largos"
+
+
+def test_con_cosas_sin_votar_sigue_estando_seguir_votando():
+    filas = votacion._teclado_resumen({0: "x"}).inline_keyboard
+
+    assert filas[0][0].callback_data == "seguir"
+    assert len(filas) == premios.cuantas() + 1
+
+
+def test_los_botones_dicen_cual_esta_votada():
+    """La marca es la misma que en la lista de arriba, para que no haya que
+    mirar dos sitios."""
+    filas = votacion._teclado_resumen({0: "x"}).inline_keyboard
+
+    assert filas[1][0].text.startswith(votacion.MARCA)
+    assert filas[2][0].text.startswith("▫️")
 
 
 # --- el cierre -------------------------------------------------------------

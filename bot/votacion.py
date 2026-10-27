@@ -111,8 +111,7 @@ async def _siguiente_sin_votar(usuario: int, desde: int) -> int | None:
     return None
 
 
-async def _resumen(usuario: int) -> str:
-    puestos = await banco.votos_de(usuario)
+def _texto_resumen(puestos: dict[int, str]) -> str:
     total = premios.cuantas()
     lineas = [f"🗳 <b>Llevas {len(puestos)} de {total}</b>", ""]
     for indice in range(total):
@@ -129,9 +128,33 @@ async def _resumen(usuario: int) -> str:
     return "\n".join(lineas)
 
 
-def _teclado_resumen() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Seguir votando", callback_data="seguir")]])
+def _teclado_resumen(puestos: dict[int, str]) -> InlineKeyboardMarkup:
+    """Los botones del resumen: una categoria por fila, para poder volver.
+
+    **Antes el resumen era solo texto** y «Seguir votando» no llevaba a
+    ningun sitio cuando ya estaban todas: el mensaje decia que se podia
+    cambiar el voto hasta el cierre y no habia por donde. Ahora cada
+    categoria es un boton y toca donde quieras.
+
+    Una por fila a proposito: con dos columnas, «Seguimos jugando · PC y
+    consola» se queda en «Seguimos jug...» y hay que adivinar cual es.
+    """
+    filas = []
+    if len(puestos) < premios.cuantas():
+        filas.append([InlineKeyboardButton("Seguir votando",
+                                           callback_data="seguir")])
+    for indice in range(premios.cuantas()):
+        marca = MARCA if puestos.get(indice) else "▫️"
+        filas.append([InlineKeyboardButton(
+            f"{marca} {premios.nombre_de(indice)}"[:60],
+            callback_data=f"c:{indice}")])
+    return InlineKeyboardMarkup(filas)
+
+
+async def _pantalla_resumen(usuario: int) -> tuple[str, InlineKeyboardMarkup]:
+    """El resumen entero con una sola lectura de la base."""
+    puestos = await banco.votos_de(usuario)
+    return _texto_resumen(puestos), _teclado_resumen(puestos)
 
 
 async def _dejar_votar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
@@ -163,9 +186,9 @@ async def empezar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     quien = update.effective_user
     indice = await _siguiente_sin_votar(quien.id, 0)
     if indice is None:
+        texto, teclado = await _pantalla_resumen(quien.id)
         await update.effective_message.reply_text(
-            await _resumen(quien.id), parse_mode=ParseMode.HTML,
-            reply_markup=_teclado_resumen())
+            texto, parse_mode=ParseMode.HTML, reply_markup=teclado)
         return
     puestos = await banco.votos_de(quien.id)
     await update.effective_message.reply_text(
@@ -208,9 +231,15 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     if datos == "r":
         await consulta.answer()
+        texto, teclado = await _pantalla_resumen(quien.id)
         await consulta.edit_message_text(
-            await _resumen(quien.id), parse_mode=ParseMode.HTML,
-            reply_markup=_teclado_resumen())
+            texto, parse_mode=ParseMode.HTML, reply_markup=teclado)
+        return
+
+    # Volver a una categoria desde el resumen, para cambiar ese voto.
+    if datos.startswith("c:"):
+        await consulta.answer()
+        await _repintar(consulta, int(datos.split(":")[1]), 0, quien.id)
         return
 
     if datos == "seguir":
@@ -234,9 +263,9 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         siguiente = await _siguiente_sin_votar(quien.id, indice + 1)
         await consulta.answer("Saltada")
         if siguiente is None:
+            texto, teclado = await _pantalla_resumen(quien.id)
             await consulta.edit_message_text(
-                await _resumen(quien.id), parse_mode=ParseMode.HTML,
-                reply_markup=_teclado_resumen())
+                texto, parse_mode=ParseMode.HTML, reply_markup=teclado)
             return
         await _repintar(consulta, siguiente, 0, quien.id)
         return
@@ -255,9 +284,9 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await consulta.answer(f"Votado: {elegido}"[:200])
         siguiente = await _siguiente_sin_votar(quien.id, indice + 1)
         if siguiente is None:
+            texto, teclado = await _pantalla_resumen(quien.id)
             await consulta.edit_message_text(
-                await _resumen(quien.id), parse_mode=ParseMode.HTML,
-                reply_markup=_teclado_resumen())
+                texto, parse_mode=ParseMode.HTML, reply_markup=teclado)
             return
         await _repintar(consulta, siguiente, 0, quien.id)
         return
