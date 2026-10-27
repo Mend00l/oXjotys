@@ -99,3 +99,71 @@ def test_el_rango_crece_con_las_filas():
     hoja = _Pestana()
     ganadores._volcar(hoja, [["1", "a", "1", "22", "hoy"]] * 30)
     assert hoja.escrito[1] == "A1:E31"
+
+
+# --- el sorteo del premio ---
+# Edu lo decidio asi el 27-oct: empate arriba, uno al azar. Y el empate
+# **es lo normal**, no el caso raro: con las 22 categorias de verdad sale
+# empate entre el 48 y el 65% de las veces.
+
+_TABLA = [(50, "ana", 19), (10, "edu", 19), (30, None, 19),
+          (20, "pepe", 18), (40, "juan", 3)]
+
+
+def test_solo_entran_los_de_la_mejor_nota():
+    mejor, empatados = ganadores._empatados_arriba(_TABLA)
+    assert mejor == 19
+    assert [u for u, _ in empatados] == [10, 30, 50]
+
+
+def test_la_lista_va_ordenada_y_no_como_venga_de_la_base():
+    """Si la lista de partida baila, el sorteo no se puede repetir."""
+    mejor, unos = ganadores._empatados_arriba(_TABLA)
+    _, otros = ganadores._empatados_arriba(list(reversed(_TABLA)))
+    assert unos == otros
+
+
+def test_quien_no_dejo_alias_entra_con_su_nombre_de_pega():
+    _, empatados = ganadores._empatados_arriba(_TABLA)
+    assert (30, ganadores.SIN_NOMBRE) in empatados
+
+
+def test_se_puede_dejar_a_alguien_fuera():
+    """El dueño pone el premio: por defecto no se lo sortea a si mismo."""
+    mejor, empatados = ganadores._empatados_arriba(_TABLA, fuera=(10,))
+    assert mejor == 19
+    assert [u for u, _ in empatados] == [30, 50]
+
+
+def test_dejar_fuera_al_unico_de_arriba_baja_la_nota():
+    mejor, empatados = ganadores._empatados_arriba(
+        [(1, "edu", 20), (2, "ana", 7)], fuera=(1,))
+    assert mejor == 7
+    assert [u for u, _ in empatados] == [2]
+
+
+def test_sin_nadie_no_revienta():
+    assert ganadores._empatados_arriba([], fuera=()) == (0, [])
+    assert ganadores._empatados_arriba([(1, "edu", 5)], fuera=(1,)) == (0, [])
+
+
+def test_el_sorteo_se_repite_con_la_misma_semilla():
+    """**Es para lo que sirve la semilla**: un `random.choice` a secas sale
+    igual de limpio y no hay forma de demostrarlo."""
+    _, empatados = ganadores._empatados_arriba(_TABLA)
+    uno = ganadores._sortear(empatados, "2026-11-11")
+    otro = ganadores._sortear(empatados, "2026-11-11")
+    assert uno == otro
+    assert uno in empatados
+
+
+def test_con_otra_semilla_puede_salir_otro():
+    """No se exige que cambie --son tres y puede repetir-- pero con
+    bastantes semillas tienen que salir todos."""
+    _, empatados = ganadores._empatados_arriba(_TABLA)
+    salen = {ganadores._sortear(empatados, str(n))[0] for n in range(200)}
+    assert salen == {10, 30, 50}
+
+
+def test_con_uno_solo_sale_ese():
+    assert ganadores._sortear([(7, "ana")], "da-igual") == (7, "ana")

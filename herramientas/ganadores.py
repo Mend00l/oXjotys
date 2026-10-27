@@ -9,6 +9,7 @@ el bot ya calcula los aciertos solo.
     python -m herramientas.ganadores poner 0:2 5:1 --si
     python -m herramientas.ganadores sheet
     python -m herramientas.ganadores sheet --si
+    python -m herramientas.ganadores sorteo
 
 **Los ganadores se eligen por numero, nunca escribiendo el nombre.**
 `0:2` quiere decir «en la categoria 0, el nominado 2», y el texto que se
@@ -26,11 +27,18 @@ Para `sheet` hacen falta `GOOGLE_SHEETS_ID` y `GOOGLE_SHEETS_CREDENTIALS`
 en el entorno, y `gspread`, que no van en el bot: **el bot no habla con
 Google**, para no tener la clave de la cuenta de servicio en un servicio
 mas de Railway. El vuelco se hace de aqui.
+
+`sorteo` elige al ganador del premio. **Lo normal es que haya empate
+arriba**: medido con las 22 categorias de verdad, sale empate mas veces
+que no --del 48 al 65% segun cuanto consenso haya-- y en casi la mitad de
+los casos son tres o mas. Asi que el desempate no es un caso raro que se
+resuelve el dia que pase: es lo que va a pasar.
 """
 
 import asyncio
 import json
 import os
+import random
 import sys
 from pathlib import Path
 
@@ -42,7 +50,8 @@ load_dotenv()
 
 from bot import banco, premios  # noqa: E402
 from bot.aciertos import SIN_NOMBRE  # noqa: E402
-from bot.reloj import sello  # noqa: E402
+from bot.reloj import ahora, sello  # noqa: E402
+from config import ADMIN_ID  # noqa: E402
 
 # La pestaña de los aciertos, en el mismo documento que los votos de
 # ofertasXbot y los puntos de Marcy: es la misma cuenta de servicio y ya
@@ -205,6 +214,76 @@ async def sheet(de_verdad: bool) -> None:
     print(f"\nEscritas {len(filas)} filas en la pestaña {hoja.title!r}.")
 
 
+# --- sorteo ---
+
+def _empatados_arriba(tabla: list[tuple[int, str | None, int]],
+                      fuera: tuple[int, ...] = ()
+                      ) -> tuple[int, list[tuple[int, str]]]:
+    """La mejor nota y quien la tiene, ordenados. `(nota, [(id, nombre)])`.
+
+    **Ordenados por numero de usuario**, no como venga de la base: el
+    sorteo tiene que dar el mismo resultado cada vez que se repita con la
+    misma semilla, y para eso la lista de partida no puede bailar.
+    """
+    dentro = [(u, (a or "").strip() or SIN_NOMBRE, c)
+              for u, a, c in tabla if u not in fuera]
+    if not dentro:
+        return 0, []
+    mejor = max(c for _, _, c in dentro)
+    return mejor, sorted((u, a) for u, a, c in dentro if c == mejor)
+
+
+def _sortear(empatados: list[tuple[int, str]],
+             semilla: str) -> tuple[int, str]:
+    """Uno de los empatados, al azar pero **repetible**.
+
+    La gracia de la semilla es que el sorteo se pueda comprobar: con la
+    lista y la semilla, cualquiera lo repite y le sale el mismo. Un
+    `random.choice` a secas sale igual de limpio y **no hay forma de
+    demostrarlo**, que en un premio con dos mil personas delante no es lo
+    mismo.
+    """
+    return random.Random(semilla).choice(empatados)
+
+
+async def sorteo(semilla: str | None, con_el_dueno: bool) -> None:
+    puestos = await banco.ganadores()
+    if not puestos:
+        raise SystemExit("No hay ningún ganador apuntado: todavía no hay "
+                         "nada que sortear.")
+    if len(puestos) < premios.cuantas():
+        print(f"⚠ Ojo: solo hay {len(puestos)} de {premios.cuantas()} "
+              f"categorías resueltas. La nota de todos puede subir aún.\n")
+
+    # **El dueño fuera por defecto.** Sus votos de prueba estan en la
+    # tabla como los de cualquiera --voto en privado para probarlo-- y es
+    # quien pone el premio.
+    fuera = () if con_el_dueno or not ADMIN_ID else (ADMIN_ID,)
+    mejor, empatados = _empatados_arriba(await banco.clasificacion(), fuera)
+    if not empatados:
+        raise SystemExit("No hay nadie en la clasificación.")
+
+    print(f"Mejor nota: {mejor} de {len(puestos)} categorías resueltas.")
+    if fuera:
+        print("(El dueño queda fuera del sorteo. Con --con-el-dueno entra.)")
+
+    if len(empatados) == 1:
+        usuario, nombre = empatados[0]
+        print(f"\nNo hay empate. Gana {nombre} ({usuario}).")
+        return
+
+    semilla = semilla or f"{ahora():%Y-%m-%d}"
+    print(f"\nEmpatados a {mejor}, {len(empatados)}:")
+    for usuario, nombre in empatados:
+        print(f"  {usuario}  {nombre}")
+
+    usuario, nombre = _sortear(empatados, semilla)
+    print(f"\nSemilla: {semilla!r}")
+    print(f"GANA: {nombre} ({usuario})")
+    print("\nCon esa lista y esa semilla el sorteo se repite igual, asi que "
+          "se puede\nenseñar y lo comprueba quien quiera.")
+
+
 # --- arranque ---
 
 async def main() -> None:
@@ -216,9 +295,25 @@ async def main() -> None:
         if hasattr(salida, "reconfigure"):
             salida.reconfigure(encoding="utf-8", errors="replace")
 
-    argumentos = sys.argv[1:]
-    de_verdad = "--si" in argumentos
-    argumentos = [a for a in argumentos if a != "--si"]
+    # Las marcas fuera y lo demas en orden. **El valor de `--semilla` se
+    # coge por posicion**, no quitando de la lista lo que se le parezca:
+    # una semilla que se llamara igual que una orden --`--semilla
+    # sorteo`-- se llevaria la orden por delante.
+    de_verdad = con_el_dueno = False
+    semilla = None
+    argumentos = []
+    toca_la_semilla = False
+    for trozo in sys.argv[1:]:
+        if toca_la_semilla:
+            semilla, toca_la_semilla = trozo, False
+        elif trozo == "--semilla":
+            toca_la_semilla = True
+        elif trozo == "--si":
+            de_verdad = True
+        elif trozo == "--con-el-dueno":
+            con_el_dueno = True
+        else:
+            argumentos.append(trozo)
     que = argumentos[0] if argumentos else "ver"
 
     await banco.abrir()
@@ -231,6 +326,8 @@ async def main() -> None:
             await poner(argumentos[1:], de_verdad)
         elif que == "sheet":
             await sheet(de_verdad)
+        elif que == "sorteo":
+            await sorteo(semilla, con_el_dueno)
         else:
             raise SystemExit(__doc__)
     finally:

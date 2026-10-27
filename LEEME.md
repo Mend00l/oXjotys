@@ -81,6 +81,7 @@ nadie**: se apuntan a mano el día de la gala.
     python -m herramientas.ganadores poner 0:2 5:1  # en seco
     python -m herramientas.ganadores poner 0:2 --si # de verdad
     python -m herramientas.ganadores sheet --si     # al Sheet
+    python -m herramientas.ganadores sorteo         # el ganador del premio
 
 **Se eligen por número, nunca escribiendo el nombre.** `0:2` es «en la
 categoría 0, el nominado 2», y el texto lo saca el script del propio
@@ -98,6 +99,30 @@ marcador es parcial a propósito.
 `/puntos` y `/clasificacion` están cerrados hasta que haya algún ganador
 apuntado. La puerta es ésa y no una fecha: si no se sabe quién ganó, un
 cero no significa «fallaste todas», significa «todavía no».
+
+## El ganador del premio
+
+**Va a haber empate arriba, y no es el caso raro: es lo que va a pasar.**
+Simulado con las 22 categorías de verdad, sale empate en la primera plaza
+entre el 48% y el 65% de las veces, y en casi la mitad de ésas son tres
+o más. Nadie va a clavar las 22: la nota ganadora sale entre 12 y 20.
+
+Así que el desempate está decidido de antemano —lo eligió Edu el
+27-oct-2026—: **uno al azar entre los empatados.**
+
+    python -m herramientas.ganadores sorteo
+    python -m herramientas.ganadores sorteo --semilla 2026-11-11
+    python -m herramientas.ganadores sorteo --con-el-dueno
+
+**El sorteo se puede comprobar.** Imprime la lista de empatados, la
+semilla y el ganador; con esas dos cosas cualquiera lo repite y le sale
+el mismo. Un `random.choice` a secas sale igual de limpio y no hay forma
+de demostrarlo, que delante de dos mil personas no es lo mismo. Sin
+`--semilla` usa la fecha del día.
+
+**El dueño queda fuera por defecto**: sus votos de prueba están en la
+tabla como los de cualquiera —votó en privado para probarlo— y es quien
+pone el premio. Con `--con-el-dueno` entra.
 
 **El bot no habla con Google.** El vuelco al Sheet —pestaña `oXJOTYs` del
 mismo documento que los votos de ofertasXbot— se hace desde aquí, con
