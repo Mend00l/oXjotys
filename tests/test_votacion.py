@@ -172,32 +172,66 @@ def test_a_medias_no_se_despide():
 
 # --- volver a una categoria ya votada --------------------------------------
 
-def test_desde_el_resumen_se_puede_volver_a_cualquiera():
+def test_con_todas_puestas_solo_queda_el_de_cambiar():
     """**El mensaje decia que se podia cambiar el voto y no habia por
-    donde**: el resumen era solo texto y «Seguir votando» no llevaba a
-    ningun sitio con todas puestas. Ahora cada categoria es un boton."""
+    donde**: el resumen era solo texto y «Seguir votando» busca la primera
+    SIN votar, asi que con todas puestas no llevaba a ningun sitio."""
     filas = votacion._teclado_resumen(_todas()).inline_keyboard
 
-    assert len(filas) == premios.cuantas(), "una fila por categoria"
-    assert [f[0].callback_data for f in filas] == [
-        f"c:{i}" for i in range(premios.cuantas())]
-    assert all(len(f) == 1 for f in filas), "una por fila, que los nombres son largos"
+    assert len(filas) == 1
+    assert filas[0][0].callback_data == "cam:0"
 
 
-def test_con_cosas_sin_votar_sigue_estando_seguir_votando():
+def test_a_medias_estan_los_dos():
     filas = votacion._teclado_resumen({0: "x"}).inline_keyboard
 
-    assert filas[0][0].callback_data == "seguir"
-    assert len(filas) == premios.cuantas() + 1
+    assert [f[0].callback_data for f in filas] == ["seguir", "cam:0"]
+
+
+def test_sin_votar_nada_no_hay_nada_que_cambiar():
+    filas = votacion._teclado_resumen({}).inline_keyboard
+
+    assert [f[0].callback_data for f in filas] == ["seguir"]
+
+
+def test_las_categorias_salen_de_cinco_en_cinco():
+    """**No una lista de veintitres botones**, que es un muro. Paginadas,
+    con la misma forma que los nominados."""
+    filas = votacion._teclado_cambiar(_todas(), 0).inline_keyboard
+
+    categorias = [f for f in filas if f[0].callback_data.startswith("c:")]
+    assert len(categorias) == 5
+    assert [f[0].callback_data for f in categorias] == [f"c:{i}" for i in range(5)]
+    assert all(len(f) == 1 for f in categorias), "los nombres son largos"
+
+    paso = filas[-2]
+    assert [b.text for b in paso] == ["1/5", "›"], "en la primera no hay ‹"
+    assert filas[-1][0].callback_data == "r", "y se vuelve al resumen"
+
+
+def test_en_la_ultima_pagina_no_sobran_botones():
+    """22 categorias en paginas de cinco: la ultima lleva dos."""
+    filas = votacion._teclado_cambiar(_todas(), 4).inline_keyboard
+
+    categorias = [f for f in filas if f[0].callback_data.startswith("c:")]
+    assert [f[0].callback_data for f in categorias] == ["c:20", "c:21"]
+    assert [b.text for b in filas[-2]] == ["‹", "5/5"], "en la ultima no hay ›"
+
+
+def test_una_pagina_de_mas_no_revienta():
+    """El boton puede venir de un mensaje viejo con mas categorias."""
+    filas = votacion._teclado_cambiar(_todas(), 99).inline_keyboard
+
+    assert filas[0][0].callback_data == "c:20", "se queda en la ultima"
 
 
 def test_los_botones_dicen_cual_esta_votada():
-    """La marca es la misma que en la lista de arriba, para que no haya que
-    mirar dos sitios."""
-    filas = votacion._teclado_resumen({0: "x"}).inline_keyboard
+    """La marca es la misma que en la lista del resumen, para no mirar en
+    dos sitios."""
+    filas = votacion._teclado_cambiar({0: "x"}, 0).inline_keyboard
 
-    assert filas[1][0].text.startswith(votacion.MARCA)
-    assert filas[2][0].text.startswith("▫️")
+    assert filas[0][0].text.startswith(votacion.MARCA)
+    assert filas[1][0].text.startswith("▫️")
 
 
 # --- el cierre -------------------------------------------------------------

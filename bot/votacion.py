@@ -46,8 +46,14 @@ def cerrada() -> bool:
     return CIERRA_EL is not None and ahora() >= CIERRA_EL
 
 
-def _paginas(cuantos: int) -> int:
-    return max(1, -(-cuantos // POR_PAGINA))
+# Cuantas categorias se enseñan de golpe al ir a cambiar un voto. Menos
+# que nominados a proposito: sus nombres son largos y la lista es para
+# buscar una concreta, no para elegir entre todas.
+CATEGORIAS_POR_PAGINA = 5
+
+
+def _paginas(cuantos: int, por_pagina: int = POR_PAGINA) -> int:
+    return max(1, -(-cuantos // por_pagina))
 
 
 def _teclado(indice: int, pagina: int, votado: str | None) -> InlineKeyboardMarkup:
@@ -129,26 +135,62 @@ def _texto_resumen(puestos: dict[int, str]) -> str:
 
 
 def _teclado_resumen(puestos: dict[int, str]) -> InlineKeyboardMarkup:
-    """Los botones del resumen: una categoria por fila, para poder volver.
+    """Los botones del resumen: seguir, y cambiar lo ya votado.
 
     **Antes el resumen era solo texto** y «Seguir votando» no llevaba a
     ningun sitio cuando ya estaban todas: el mensaje decia que se podia
-    cambiar el voto hasta el cierre y no habia por donde. Ahora cada
-    categoria es un boton y toca donde quieras.
+    cambiar el voto hasta el cierre y no habia por donde.
 
-    Una por fila a proposito: con dos columnas, «Seguimos jugando · PC y
-    consola» se queda en «Seguimos jug...» y hay que adivinar cual es.
+    Las categorias **no** se ponen aqui una a una: serian veintitres
+    botones de golpe, un muro. Van detras de «¿Quieres cambiar tu voto?»
+    y paginadas, como los nominados.
     """
     filas = []
     if len(puestos) < premios.cuantas():
         filas.append([InlineKeyboardButton("Seguir votando",
                                            callback_data="seguir")])
-    for indice in range(premios.cuantas()):
+    if puestos:
+        filas.append([InlineKeyboardButton("✏️ ¿Quieres cambiar tu voto?",
+                                           callback_data="cam:0")])
+    return InlineKeyboardMarkup(filas)
+
+
+def _teclado_cambiar(puestos: dict[int, str], pagina: int) -> InlineKeyboardMarkup:
+    """Las categorias, de cinco en cinco, para volver a cualquiera.
+
+    Misma forma que la de los nominados --‹ 1/5 ›-- para que se maneje
+    igual. Una por fila: con dos columnas, «Seguimos jugando · PC y
+    consola» se queda en «Seguimos jug...» y hay que adivinar cual es.
+    """
+    total_cat = premios.cuantas()
+    paginas = _paginas(total_cat, CATEGORIAS_POR_PAGINA)
+    pagina = max(0, min(pagina, paginas - 1))
+    desde = pagina * CATEGORIAS_POR_PAGINA
+
+    filas = []
+    for indice in range(desde, min(desde + CATEGORIAS_POR_PAGINA, total_cat)):
         marca = MARCA if puestos.get(indice) else "▫️"
         filas.append([InlineKeyboardButton(
             f"{marca} {premios.nombre_de(indice)}"[:60],
             callback_data=f"c:{indice}")])
+
+    if paginas > 1:
+        paso = []
+        if pagina > 0:
+            paso.append(InlineKeyboardButton("‹", callback_data=f"cam:{pagina - 1}"))
+        paso.append(InlineKeyboardButton(f"{pagina + 1}/{paginas}",
+                                         callback_data="nada"))
+        if pagina < paginas - 1:
+            paso.append(InlineKeyboardButton("›", callback_data=f"cam:{pagina + 1}"))
+        filas.append(paso)
+
+    filas.append([InlineKeyboardButton("Mis votos", callback_data="r")])
     return InlineKeyboardMarkup(filas)
+
+
+def _texto_cambiar() -> str:
+    return ("✏️ <b>¿Cuál quieres cambiar?</b>\n\n"
+            "Toca una categoría y la votas otra vez.")
 
 
 async def _pantalla_resumen(usuario: int) -> tuple[str, InlineKeyboardMarkup]:
@@ -196,18 +238,25 @@ async def empezar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         reply_markup=_teclado(indice, 0, puestos.get(indice)))
 
 
+async def _editar(consulta, texto: str, teclado) -> None:
+    """Cambia el mensaje por otro.
+
+    «Message is not modified» pasa al tocar la pagina en la que ya estas.
+    No es un fallo y no tiene que ensuciar el registro.
+    """
+    try:
+        await consulta.edit_message_text(texto, parse_mode=ParseMode.HTML,
+                                         reply_markup=teclado)
+    except BadRequest as e:
+        if "not modified" not in str(e).lower():
+            raise
+
+
 async def _repintar(consulta, indice: int, pagina: int, usuario: int) -> None:
     puestos = await banco.votos_de(usuario)
     votado = puestos.get(indice)
-    try:
-        await consulta.edit_message_text(
-            _texto(indice, votado), parse_mode=ParseMode.HTML,
-            reply_markup=_teclado(indice, pagina, votado))
-    except BadRequest as e:
-        # «Message is not modified» pasa al tocar la pagina en la que ya
-        # estas. No es un fallo y no tiene que ensuciar el registro.
-        if "not modified" not in str(e).lower():
-            raise
+    await _editar(consulta, _texto(indice, votado),
+                  _teclado(indice, pagina, votado))
 
 
 async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -236,7 +285,15 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             texto, parse_mode=ParseMode.HTML, reply_markup=teclado)
         return
 
-    # Volver a una categoria desde el resumen, para cambiar ese voto.
+    # La lista de categorias, para cambiar un voto ya puesto.
+    if datos.startswith("cam:"):
+        await consulta.answer()
+        puestos = await banco.votos_de(quien.id)
+        await _editar(consulta, _texto_cambiar(),
+                      _teclado_cambiar(puestos, int(datos.split(":")[1])))
+        return
+
+    # Y volver a una de ellas.
     if datos.startswith("c:"):
         await consulta.answer()
         await _repintar(consulta, int(datos.split(":")[1]), 0, quien.id)
