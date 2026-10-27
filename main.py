@@ -136,6 +136,7 @@ async def main() -> None:
     app.add_handler(CommandHandler("votar", votacion.empezar))
     app.add_handler(CommandHandler("recuento", recuento.recuento))
     app.add_handler(CommandHandler("estado", recuento.estado))
+    app.add_handler(CommandHandler("ranking", recuento.ranking))
     app.add_handler(CallbackQueryHandler(recuento.publicar, pattern=r"^pub:"))
     app.add_handler(CallbackQueryHandler(votacion.pulsado))
     # **`MY_CHAT_MEMBER` y no `CHAT_MEMBER`**: el primero es el bot

@@ -56,12 +56,22 @@ def _paginas(cuantos: int, por_pagina: int = POR_PAGINA) -> int:
     return max(1, -(-cuantos // por_pagina))
 
 
-def _teclado(indice: int, pagina: int, votado: str | None) -> InlineKeyboardMarkup:
+def _teclado(indice: int, pagina: int, votado: str | None,
+             cambiando: bool = False) -> InlineKeyboardMarkup:
+    """Los nominados de esa categoria.
+
+    `cambiando` dice que se llego aqui desde la lista de «cambiar mi
+    voto». **Viaja pegado a los botones**, con un trozo de mas en su
+    dato: asi al votar --o al pasar pagina-- se sabe de donde se venia
+    sin guardar nada por el camino, que lo guardado se pierde en cuanto
+    el bot se reinicia.
+    """
     cat = premios.categoria(indice)
     nominados = cat["nominados"]
     total = _paginas(len(nominados))
     pagina = max(0, min(pagina, total - 1))
     desde = pagina * POR_PAGINA
+    marca = ":c" if cambiando else ""
 
     filas = []
     for numero in range(desde, min(desde + POR_PAGINA, len(nominados))):
@@ -69,22 +79,27 @@ def _teclado(indice: int, pagina: int, votado: str | None) -> InlineKeyboardMark
         if votado == texto:
             texto = f"{MARCA} {texto}"
         filas.append([InlineKeyboardButton(
-            texto[:60], callback_data=f"v:{indice}:{pagina}:{numero}")])
+            texto[:60], callback_data=f"v:{indice}:{pagina}:{numero}{marca}")])
 
     if total > 1:
         paso = []
         if pagina > 0:
             paso.append(InlineKeyboardButton(
-                "‹", callback_data=f"p:{indice}:{pagina - 1}"))
+                "‹", callback_data=f"p:{indice}:{pagina - 1}{marca}"))
         paso.append(InlineKeyboardButton(
             f"{pagina + 1}/{total}", callback_data="nada"))
         if pagina < total - 1:
             paso.append(InlineKeyboardButton(
-                "›", callback_data=f"p:{indice}:{pagina + 1}"))
+                "›", callback_data=f"p:{indice}:{pagina + 1}{marca}"))
         filas.append(paso)
 
     ultima = []
-    if indice + 1 < premios.cuantas():
+    if cambiando:
+        # Saltar no pinta nada cuando se viene a cambiar: lo que hace
+        # falta es poder irse sin tocar el voto.
+        ultima.append(InlineKeyboardButton(
+            "↩ Volver", callback_data=f"cam:{indice // CATEGORIAS_POR_PAGINA}"))
+    elif indice + 1 < premios.cuantas():
         ultima.append(InlineKeyboardButton(
             "Saltar ⏭", callback_data=f"s:{indice}"))
     ultima.append(InlineKeyboardButton("Mis votos", callback_data="r"))
@@ -252,11 +267,19 @@ async def _editar(consulta, texto: str, teclado) -> None:
             raise
 
 
-async def _repintar(consulta, indice: int, pagina: int, usuario: int) -> None:
+async def _repintar(consulta, indice: int, pagina: int, usuario: int,
+                    cambiando: bool = False) -> None:
     puestos = await banco.votos_de(usuario)
     votado = puestos.get(indice)
     await _editar(consulta, _texto(indice, votado),
-                  _teclado(indice, pagina, votado))
+                  _teclado(indice, pagina, votado, cambiando))
+
+
+async def _volver_a_la_lista(consulta, usuario: int, indice: int) -> None:
+    """A la lista de categorias, en la pagina donde esta esa."""
+    puestos = await banco.votos_de(usuario)
+    await _editar(consulta, _texto_cambiar(),
+                  _teclado_cambiar(puestos, indice // CATEGORIAS_POR_PAGINA))
 
 
 async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -293,10 +316,12 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                       _teclado_cambiar(puestos, int(datos.split(":")[1])))
         return
 
-    # Y volver a una de ellas.
+    # Y volver a una de ellas. **Marcada como «cambiando»**: al votar,
+    # devuelve a la lista en vez de saltar a la siguiente categoria.
     if datos.startswith("c:"):
         await consulta.answer()
-        await _repintar(consulta, int(datos.split(":")[1]), 0, quien.id)
+        await _repintar(consulta, int(datos.split(":")[1]), 0, quien.id,
+                        cambiando=True)
         return
 
     if datos == "seguir":
@@ -310,9 +335,12 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     partes = datos.split(":")
     accion = partes[0]
 
-    if accion == "p" and len(partes) == 3:
+    # El cuarto trozo, cuando esta, dice que se vino a cambiar un voto: se
+    # arrastra al pasar pagina para no perderlo por el camino.
+    if accion == "p" and len(partes) in (3, 4):
         await consulta.answer()
-        await _repintar(consulta, int(partes[1]), int(partes[2]), quien.id)
+        await _repintar(consulta, int(partes[1]), int(partes[2]), quien.id,
+                        cambiando=len(partes) == 4)
         return
 
     if accion == "s" and len(partes) == 2:
@@ -327,7 +355,8 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await _repintar(consulta, siguiente, 0, quien.id)
         return
 
-    if accion == "v" and len(partes) == 4:
+    if accion == "v" and len(partes) in (4, 5):
+        cambiando = len(partes) == 5
         indice, _, cual = int(partes[1]), int(partes[2]), int(partes[3])
         elegido = premios.nominado(indice, cual)
         if elegido is None:
@@ -339,6 +368,11 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await banco.guardar(quien.id, quien.username or quien.full_name,
                             indice, elegido)
         await consulta.answer(f"Votado: {elegido}"[:200])
+        # **Quien viene a cambiar uno suele venir a cambiar otro**, asi
+        # que vuelve a la lista y no a la categoria siguiente.
+        if cambiando:
+            await _volver_a_la_lista(consulta, quien.id, indice)
+            return
         siguiente = await _siguiente_sin_votar(quien.id, indice + 1)
         if siguiente is None:
             texto, teclado = await _pantalla_resumen(quien.id)

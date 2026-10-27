@@ -78,6 +78,17 @@ def _cuando_cierra(crudo: str) -> datetime | None:
 CIERRA_EL = _cuando_cierra(os.getenv("CIERRA_EL") or "")
 CIERRA_EL_CRUDO = (os.getenv("CIERRA_EL") or "").strip()
 
+# Desde cuando `/ranking` enseña el resultado a todo el mundo. **No es la
+# fecha de cierre**: la nuestra cierra el 9 y la gala de los Golden
+# Joystick es el 11, asi que entre las dos hay dos dias en los que
+# enseñarlo seria destripar lo que todavia no se sabe.
+#
+# Y antes de cerrar seria peor: ver el marcador a mitad de votacion
+# arrastra el voto, que la gente vota a lo que va ganando. Por eso el
+# `/recuento` de Edu es solo suyo.
+RANKING_DESDE = (_cuando_cierra(os.getenv("RANKING_DESDE") or "")
+                 or datetime(2026, 11, 11, tzinfo=CASA))
+
 # Cuantos nominados por pantalla. Ocho porque la mayoria de categorias
 # tienen seis: asi casi todas se resuelven sin pasar pagina, y las de
 # diez se quedan en dos. Con cinco eran cuarenta y seis pantallas.

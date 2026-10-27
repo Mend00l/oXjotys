@@ -20,9 +20,9 @@ from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from bot import banco, premios
-from bot.reloj import sello
+from bot.reloj import ahora, sello
 from bot.votacion import cerrada
-from config import ADMIN_ID, PUBLICAR_EN
+from config import ADMIN_ID, PUBLICAR_EN, RANKING_DESDE
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +134,29 @@ async def publicar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
     await consulta.answer("Publicado")
     await consulta.edit_message_reply_markup(reply_markup=None)
+
+
+async def ranking(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """`/ranking`: el resultado de nuestra votacion, para todo el mundo.
+
+    **Solo a partir del 11 de noviembre**, que es cuando se sabe quien ha
+    ganado de verdad. Antes no, y por dos motivos distintos:
+
+      - Antes del cierre, ver el marcador arrastra el voto: la gente vota
+        a lo que va ganando. Por eso `/recuento` es solo de Edu.
+      - Y entre el cierre --el 9-- y la gala --el 11-- tampoco, que seria
+        destripar lo que todavia no se sabe.
+    """
+    mensaje = update.effective_message
+    if ahora() < RANKING_DESDE:
+        await mensaje.reply_text(
+            f"🏆 Todavía no.\n\nEl ranking sale el "
+            f"{RANKING_DESDE:%d/%m/%Y}, cuando se sepan los ganadores de "
+            f"verdad en los Golden Joystick Awards.")
+        return
+    texto = await _texto_del_recuento(completo=False)
+    for trozo in _en_trozos(texto):
+        await mensaje.reply_text(trozo, parse_mode=ParseMode.HTML)
 
 
 async def estado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

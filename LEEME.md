@@ -45,8 +45,14 @@ esté, se une.
 | Comando | Quién | Qué hace |
 |---|---|---|
 | `/votar` o `/start` | cualquiera | empieza o retoma la votación |
+| `/ranking` | cualquiera | el resultado, **a partir del 11 de noviembre** |
 | `/recuento` | solo Edu | cómo va, categoría por categoría |
 | `/estado` | solo Edu | si está abierta y cuánta gente ha votado |
+
+**`/ranking` tiene su propia fecha y no es la del cierre.** Son dos
+razones distintas: antes de cerrar, ver el marcador arrastra el voto; y
+entre el cierre —el 9— y la gala —el 11— sería destripar lo que todavía
+no se sabe. Se cambia con `RANKING_DESDE`.
 
 **El recuento es solo para Edu y en privado**, a propósito: enseñar el
 marcador a mitad de votación arrastra el voto, que la gente vota a lo
@@ -92,6 +98,7 @@ diciembre de 2026, así que esto se configura en el panel.
 | `DATABASE_URL` | la pone Railway al crear la base |
 | `GRUPOS` | los grupos que pueden votar, por comas |
 | `CIERRA_EL` | `2026-11-09 23:59`, en hora de España |
+| `RANKING_DESDE` | desde cuándo `/ranking` enseña el resultado. Si no se pone, el 11-11-2026 |
 | `PUBLICAR_EN` | dónde se ofrece publicar el resultado |
 | `ENLACE_DEL_GRUPO` | lo que se le enseña a quien no está |
 

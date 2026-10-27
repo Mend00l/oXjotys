@@ -234,6 +234,37 @@ def test_los_botones_dicen_cual_esta_votada():
     assert filas[1][0].text.startswith("▫️")
 
 
+def test_viniendo_a_cambiar_los_botones_lo_llevan_escrito():
+    """**No se guarda en ningun sitio de donde vienes**: viaja pegado al
+    boton. Lo guardado se pierde en cuanto el bot se reinicia, y entonces
+    el siguiente toque te manda a otra parte sin saber por que."""
+    filas = votacion._teclado(0, 0, None, cambiando=True).inline_keyboard
+    nominados = [f for f in filas if f[0].callback_data.startswith("v:")]
+
+    assert all(f[0].callback_data.endswith(":c") for f in nominados)
+    paso = [b for f in filas for b in f if b.callback_data.startswith("p:")]
+    assert all(b.callback_data.endswith(":c") for b in paso)
+
+
+def test_viniendo_a_cambiar_no_se_ofrece_saltar():
+    """Saltar no pinta nada en una que ya votaste: lo que hace falta es
+    poder irse sin tocarla."""
+    filas = votacion._teclado(5, 0, "x", cambiando=True).inline_keyboard
+    ultima = filas[-1]
+
+    assert [b.text for b in ultima] == ["↩ Volver", "Mis votos"]
+    assert ultima[0].callback_data == "cam:1", "la pagina donde esta la 5"
+
+
+def test_votando_normal_no_cambia_nada():
+    """La vuelta de siempre --votar del tiron-- se queda igual."""
+    filas = votacion._teclado(0, 0, None).inline_keyboard
+    nominados = [f for f in filas if f[0].callback_data.startswith("v:")]
+
+    assert not any(f[0].callback_data.endswith(":c") for f in nominados)
+    assert filas[-1][0].text == "Saltar ⏭"
+
+
 # --- el cierre -------------------------------------------------------------
 
 def test_antes_de_la_fecha_esta_abierta(monkeypatch):
