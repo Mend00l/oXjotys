@@ -148,6 +148,32 @@ async def test_cuando_estan_todas_no_hay_siguiente(monkeypatch):
     assert await votacion._siguiente_sin_votar(1, 0) is None
 
 
+async def test_al_terminar_se_da_las_gracias(monkeypatch):
+    """Lo que se lee tras el ultimo voto. **Contesta de paso lo que mas se
+    pregunta**: cuando se sabe el ganador."""
+    async def _votos(usuario):
+        return {i: "x" for i in range(premios.cuantas())}
+
+    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
+    texto = await votacion._resumen(1)
+
+    assert "¡Gracias por participar en los oXJOTYs!" in texto
+    assert "Golden Joystick Awards" in texto
+    assert "hasta que cierre" in texto
+
+
+async def test_a_medias_no_se_despide(monkeypatch):
+    """Despedirse de quien va por la tercera sonaria a que ya ha acabado."""
+    async def _votos(usuario):
+        return {0: "x", 1: "y"}
+
+    monkeypatch.setattr(votacion.banco, "votos_de", _votos)
+    texto = await votacion._resumen(1)
+
+    assert "Gracias por participar" not in texto
+    assert "Seguir votando" in texto
+
+
 # --- el cierre -------------------------------------------------------------
 
 def test_antes_de_la_fecha_esta_abierta(monkeypatch):

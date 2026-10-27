@@ -34,6 +34,13 @@ logger = logging.getLogger(__name__)
 
 MARCA = "✅"
 
+# Lo que se lee al terminar de votar. **Es de Edu, palabra por palabra**:
+# lo del ganador es lo que mas preguntan y asi queda contestado sin que
+# nadie tenga que preguntarlo.
+DESPEDIDA = ("🏆 <b>¡Gracias por participar en los oXJOTYs!</b>\n"
+             "Diremos el ganador tras el recuento de votos de los "
+             "Golden Joystick Awards.")
+
 
 def cerrada() -> bool:
     return CIERRA_EL is not None and ahora() >= CIERRA_EL
@@ -116,8 +123,9 @@ async def _resumen(usuario: int) -> str:
     if len(puestos) < total:
         lineas += ["", "Toca «Seguir votando» para las que faltan."]
     else:
-        lineas += ["", "Las tienes todas. Puedes cambiar lo que quieras "
-                       "hasta que cierre."]
+        lineas += ["", DESPEDIDA, "",
+                   "Las tienes todas. Puedes cambiar lo que quieras "
+                   "hasta que cierre."]
     return "\n".join(lineas)
 
 
