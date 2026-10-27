@@ -45,14 +45,14 @@ async def test_sin_ganadores_los_puntos_no_salen(monkeypatch):
     monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({}))
     mensaje = _Mensaje()
     await aciertos.puntos(_update(mensaje), None)
-    assert "Todavía no" in mensaje.dicho[0]
+    assert mensaje.dicho[0] == aciertos.TODAVIA_NO
 
 
 async def test_sin_ganadores_la_clasificacion_no_sale(monkeypatch):
     monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({}))
     mensaje = _Mensaje()
     await aciertos.clasificacion(_update(mensaje), None)
-    assert "Todavía no" in mensaje.dicho[0]
+    assert mensaje.dicho[0] == aciertos.TODAVIA_NO
 
 
 async def test_los_puntos_en_un_grupo_mandan_a_privado(monkeypatch):
@@ -120,7 +120,7 @@ def test_las_tres_primeras_llevan_medalla():
 def test_quien_no_dejo_nombre_sale_como_alguien():
     texto = aciertos._texto_de_la_tabla([(1, None, 3)],
                                         cuantas_resueltas=5, completo=False)
-    assert "Alguien" in texto
+    assert aciertos.SIN_NOMBRE in texto
 
 
 def test_la_publica_se_corta_y_dice_cuantos_faltan():

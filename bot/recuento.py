@@ -150,7 +150,7 @@ async def ranking(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     mensaje = update.effective_message
     if ahora() < RANKING_DESDE:
         await mensaje.reply_text(
-            f"🏆 Todavía no.\n\nEl ranking sale el "
+            f"🏆 Todavía no hay ganadores.\n\nEl ranking sale el "
             f"{RANKING_DESDE:%d/%m/%Y}, cuando se sepan los ganadores de "
             f"verdad en los Golden Joystick Awards.")
         return

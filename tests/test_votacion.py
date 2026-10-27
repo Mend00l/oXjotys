@@ -159,7 +159,17 @@ def test_al_terminar_se_da_las_gracias():
 
     assert "¡Gracias por participar en los oXJOTYs!" in texto
     assert "Golden Joystick Awards" in texto
-    assert "hasta que cierre" in texto
+    assert "finalice el plazo" in texto
+
+
+def test_la_fecha_de_los_textos_sale_de_la_configuracion(monkeypatch):
+    """**No se escribe a mano.** Un «9/11» puesto a dedo sigue ahi el año
+    que la fecha cambie, y nadie lo nota: el texto no falla, miente."""
+    monkeypatch.setattr(votacion, "EL_PLAZO", "9 de Noviembre")
+    monkeypatch.setattr(votacion, "HASTA_EL_DIA", "hasta el día 9/11")
+
+    assert "9 de Noviembre" in votacion._texto_resumen(_todas())
+    assert "hasta el día 9/11" in votacion._texto(0, "Lo que voto")
 
 
 def test_a_medias_no_se_despide():

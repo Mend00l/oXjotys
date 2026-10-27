@@ -56,8 +56,11 @@ def test_los_pares_salen_como_numeros():
 # --- las filas que van al Sheet ---
 
 def test_quien_no_dejo_nombre_va_como_alguien():
+    """**El mismo nombre que en la clasificacion del bot**, no una copia:
+    si se cambia uno, el documento y la tabla dejan de llamar igual a la
+    misma persona."""
     filas = ganadores._filas([(7, None, 3)], resueltas=22, cuando="hoy")
-    assert filas == [["7", "Alguien", "3", "22", "hoy"]]
+    assert filas == [["7", ganadores.SIN_NOMBRE, "3", "22", "hoy"]]
 
 
 def test_todo_va_en_texto():

@@ -41,6 +41,7 @@ from dotenv import load_dotenv  # noqa: E402
 load_dotenv()
 
 from bot import banco, premios  # noqa: E402
+from bot.aciertos import SIN_NOMBRE  # noqa: E402
 from bot.reloj import sello  # noqa: E402
 
 # La pestaña de los aciertos, en el mismo documento que los votos de
@@ -154,7 +155,7 @@ def _filas(tabla: list[tuple[int, str | None, int]], resueltas: int,
            cuando: str) -> list[list[str]]:
     """La tabla tal como va al Sheet. Todo en texto: lo que se escribe
     sin interpretar es lo que se lee luego igual."""
-    return [[str(usuario), (alias or "").strip() or "Alguien",
+    return [[str(usuario), (alias or "").strip() or SIN_NOMBRE,
              str(cuantos), str(resueltas), cuando]
             for usuario, alias, cuantos in tabla]
 

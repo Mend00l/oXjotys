@@ -41,6 +41,23 @@ DESPEDIDA = ("🏆 <b>¡Gracias por participar en los oXJOTYs!</b>\n"
              "Diremos el ganador tras el recuento de votos de los "
              "Golden Joystick Awards.")
 
+# Tres textos hablan de la fecha de cierre. **Sale de `CIERRA_EL` y no se
+# escribe a mano**: el dia que esa fecha cambie --otra edicion, una
+# prorroga de unas horas-- los textos cambian con ella en vez de quedarse
+# diciendo «9/11» tan tranquilos. Nadie se daria cuenta.
+_MESES = ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+          "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+
+if CIERRA_EL:
+    HASTA_EL = f"hasta el {CIERRA_EL.day}/{CIERRA_EL.month}"
+    HASTA_EL_DIA = f"hasta el día {CIERRA_EL.day}/{CIERRA_EL.month}"
+    EL_PLAZO = f"{CIERRA_EL.day} de {_MESES[CIERRA_EL.month - 1].capitalize()}"
+else:
+    # Sin fecha no se cierra nunca --y el arranque ya lo avisa--, pero los
+    # textos tienen que seguir leyendose como frases.
+    HASTA_EL = HASTA_EL_DIA = "hasta que cierre"
+    EL_PLAZO = "sin fecha puesta"
+
 
 def cerrada() -> bool:
     return CIERRA_EL is not None and ahora() >= CIERRA_EL
@@ -112,8 +129,10 @@ def _texto(indice: int, votado: str | None) -> str:
     cabecera = (f"🏆 <b>{premios.nombre_de(indice)}</b>\n"
                 f"<i>{indice + 1} de {premios.cuantas()}</i>\n\n")
     if votado:
-        return cabecera + f"Votaste <b>{votado}</b>. Puedes cambiarlo."
-    return cabecera + "Toca el que quieras. Podrás cambiarlo hasta que cierre."
+        return cabecera + (f"Votaste <b>{votado}</b>. Puedes cambiar tu voto "
+                           f"{HASTA_EL_DIA}")
+    return cabecera + (f"Elige tu ganador. Si cambias de idea, puedes "
+                       f"modificar tu voto {HASTA_EL}.")
 
 
 async def _siguiente_sin_votar(usuario: int, desde: int) -> int | None:
@@ -141,11 +160,12 @@ def _texto_resumen(puestos: dict[int, str]) -> str:
         lineas.append(f"{MARCA} <b>{nombre}</b>: {elegido}" if elegido
                       else f"▫️ {nombre}")
     if len(puestos) < total:
-        lineas += ["", "Toca «Seguir votando» para las que faltan."]
+        lineas += ["", "Toca «Seguir votando» para votar en las categorías "
+                       "que faltan."]
     else:
         lineas += ["", DESPEDIDA, "",
-                   "Las tienes todas. Puedes cambiar lo que quieras "
-                   "hasta que cierre."]
+                   f"Has votado en todas las categorías. Puedes cambiar lo "
+                   f"que quieras hasta que finalice el plazo: {EL_PLAZO}."]
     return "\n".join(lineas)
 
 
@@ -204,7 +224,7 @@ def _teclado_cambiar(puestos: dict[int, str], pagina: int) -> InlineKeyboardMark
 
 
 def _texto_cambiar() -> str:
-    return ("✏️ <b>¿Cuál quieres cambiar?</b>\n\n"
+    return ("✏️ <b>¿Qué categoría quieres cambiar?</b>\n\n"
             "Toca una categoría y la votas otra vez.")
 
 
@@ -223,14 +243,20 @@ async def _dejar_votar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
         return False
     if not premios.CATEGORIAS:
         await mensaje.reply_text(
-            "Todavía no hay nada que votar. Vuelve en un rato.")
+            "Todavía no hay nada que votar. Vuelve en un rato y ya estará "
+            "todo listo.")
         return False
     quien = update.effective_user
     if not await socios.puede_votar(context.bot, quien.id):
-        aviso = ("Esta votación es para la gente de los grupos.\n\n"
-                 "Únete y vuelve a escribirme.")
+        # **El alias del grupo sale de `ENLACE_DEL_GRUPO`**, en medio del
+        # texto y no pegado al final: es lo que hay que tocar el dia que
+        # la comunidad cambie de nombre, y eso es una variable y no un
+        # despliegue. Sin ella la frase se sigue leyendo entera.
+        aviso = ("Esta votación es para los usuarios de la comunidad "
+                 "ofertasXjuegos:")
         if ENLACE_DEL_GRUPO:
             aviso += f"\n\n{ENLACE_DEL_GRUPO}"
+        aviso += "\n\n¡Únete y escríbeme de nuevo!"
         await mensaje.reply_text(aviso)
         return False
     return True
@@ -298,7 +324,8 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     if not await socios.puede_votar(context.bot, quien.id):
         await consulta.answer(
-            "Esta votación es para la gente de los grupos.", show_alert=True)
+            "Esta votación es para usuarios de la comunidad.",
+            show_alert=True)
         return
 
     if datos == "r":
@@ -362,8 +389,8 @@ async def pulsado(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if elegido is None:
             # El boton viene de un mensaje viejo y la lista ha cambiado.
             await consulta.answer(
-                "Ese botón ya no vale. Escríbeme /votar y lo retomamos.",
-                show_alert=True)
+                "Ese botón ya no vale. Escríbeme /votar y seguimos donde lo "
+                "habíamos dejado.", show_alert=True)
             return
         await banco.guardar(quien.id, quien.username or quien.full_name,
                             indice, elegido)

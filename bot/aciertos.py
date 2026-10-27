@@ -42,8 +42,14 @@ MEDALLAS = ["🥇", "🥈", "🥉"]
 # no necesita bajar doscientas lineas para ver que va el decimocuarto.
 CUANTOS_SE_VEN = 20
 
-TODAVIA_NO = ("🏆 Todavía no.\n\nLos aciertos salen cuando se sepa quién ha "
-              "ganado de verdad en los Golden Joystick Awards.")
+TODAVIA_NO = ("🏆 Ganador no seleccionado.\n\nLos ganadores de cada categoría "
+              "se sabrán cuando se entreguen los Golden Joystick Awards.")
+
+# Como se llama a quien voto sin tener alias de Telegram. Sale en la
+# clasificacion y en la pestaña del Sheet, y **se escribe una sola vez**:
+# con dos copias, el dia que se cambie una la tabla y el documento dejan
+# de llamar igual a la misma persona.
+SIN_NOMBRE = "Alguien sin @."
 
 
 def _es_edu(update: Update) -> bool:
@@ -53,7 +59,7 @@ def _es_edu(update: Update) -> bool:
 
 def _nombre(alias: str | None) -> str:
     """Como se le llama en la tabla a quien no dejo nombre."""
-    return (alias or "").strip() or "Alguien"
+    return (alias or "").strip() or SIN_NOMBRE
 
 
 def _texto_de_los_mios(aciertos: list[tuple[int, str, str | None]],
@@ -109,7 +115,7 @@ async def puntos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     mensaje = update.effective_message
     charla = update.effective_chat
     if charla is not None and charla.type != ChatType.PRIVATE:
-        await mensaje.reply_text("Escríbeme en privado y te cuento lo tuyo.")
+        await mensaje.reply_text("Escríbeme en privado y lo vemos.")
         return
 
     ganadores = await banco.ganadores()
