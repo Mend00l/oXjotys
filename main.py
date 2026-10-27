@@ -16,6 +16,7 @@ import sys
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.date import DateTrigger
+from telegram.error import Conflict
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler)
 
 from bot import banco, premios, recuento, reloj, votacion
@@ -39,6 +40,50 @@ logger = logging.getLogger(__name__)
 # le da una hora de cortesia para que no se pierda por estar el bucle
 # ocupado justo en ese segundo.
 GRACIA = {"misfire_grace_time": 3600}
+
+
+# Cada cuanto se mira que el bot siga escuchando.
+VIGILA = 60
+
+
+async def se_rompio(update, context) -> None:
+    """Lo que falle, apuntado en una linea, y el bot sigue vivo.
+
+    Sin esto, python-telegram-bot vuelca la traza entera por cada intento
+    y entre cuarenta lineas no se ve lo unico que importa: que ha pasado.
+
+    `Conflict` tiene mensaje propio porque su texto en ingles no dice como
+    se arregla: significa que hay dos procesos con el mismo token, y
+    Telegram solo admite uno.
+    """
+    error = context.error
+    if isinstance(error, Conflict):
+        logger.error("Hay otro bot escuchando con este mismo token —puede "
+                     "ser uno en local, o un despliegue viejo que no se "
+                     "apago—. Telegram solo admite uno: apaga el otro.")
+        return
+    logger.error(f"{type(error).__name__}: {error}", exc_info=error)
+
+
+async def _vigilar(app) -> None:
+    """Esperar, pero mirando que el bot siga escuchando.
+
+    **Aqui habia un `asyncio.Event().wait()`**, que no se cumple nunca y
+    tampoco se entera de nada. El que recoge los mensajes es otra tarea:
+    si se muere, el proceso sigue vivo, Railway lo ve verde y el bot se
+    queda sordo **sin una sola linea en el registro**.
+
+    Paso el 26-oct-2026: dos `Conflict` al desplegar, silencio durante 24
+    horas y nadie pudo votar. Se descubrio porque Telegram dejo leer sus
+    mensajes a otro, que es lo que solo pasa cuando no hay nadie
+    recogiendolos.
+
+    Cerrarse con error es a proposito: asi Railway lo levanta otra vez.
+    """
+    while app.updater.running:
+        await asyncio.sleep(VIGILA)
+    raise SystemExit("El bot ha dejado de escuchar. Me cierro para que me "
+                     "vuelvan a levantar.")
 
 
 def _planificar_cierre(app) -> None:
@@ -92,6 +137,7 @@ async def main() -> None:
     app.add_handler(CommandHandler("estado", recuento.estado))
     app.add_handler(CallbackQueryHandler(recuento.publicar, pattern=r"^pub:"))
     app.add_handler(CallbackQueryHandler(votacion.pulsado))
+    app.add_error_handler(se_rompio)
 
     _planificar_cierre(app)
 
@@ -100,7 +146,7 @@ async def main() -> None:
         await app.start()
         await app.updater.start_polling()
         try:
-            await asyncio.Event().wait()
+            await _vigilar(app)
         finally:
             await app.updater.stop()
             await app.stop()
