@@ -2,7 +2,9 @@
   "fuente": "https://file770.com/golden-joystick-awards-2026-shortlist/ (12-oct-2026)",
   "notas": [
     "44 edicion. La votacion oficial cierra el 23-oct-2026.",
-    "Ultimate Game of the Year se anuncia el 26-oct y se vota aparte.",
+    "Ultimate Game of the Year se anuncio el 26-oct-2026 con 12 nominados y alli se vota aparte, hasta el 30-oct: aqui es «Juego del Año · Absoluto».",
+    "Esa va LA ULTIMA aunque sea la mas golosa: la clave de cada categoria es su numero de orden, y meterla arriba renumeraria las demas y mezclaria los votos ya dados.",
+    "Alli se eligen hasta tres por orden de preferencia; aqui se vota uno, como en las demas.",
     "Los ganadores se anuncian el 11-nov-2026."
   ],
   "categorias": [
@@ -26,6 +28,7 @@
     {"nombre": "Mejor hardware", "nominados": ["Logitech G PRO X2 SUPERSTRIKE", "Razer Viper V4 Pro", "Secretlab ATLAS", "Sony INZONE M10S II", "Steam Controller", "Turtle Beach Stealth Pro II"]},
     {"nombre": "Seguimos jugando · PC y consola", "nominados": ["Apex Legends", "Call of Duty: Warzone", "Fortnite", "GTA Online", "HELLDIVERS 2", "HITMAN World of Assassination", "Minecraft", "No Man's Sky", "Palworld", "The Elder Scrolls Online", "Warframe", "World of Warcraft"]},
     {"nombre": "Seguimos jugando · Móvil", "nominados": ["Balatro", "Genshin Impact", "Honkai: Star Rail", "MARVEL SNAP", "MONOPOLY GO!", "NTE: Neverness to Everness", "Old School RuneScape", "Pokémon GO", "Roblox", "Sky: Children of the Light", "Rainbow Six Mobile", "Wuthering Waves"]},
-    {"nombre": "El más esperado", "nominados": ["Alien: Isolation 2", "ANANTA", "Black Myth: Zhong Kui", "EXODUS", "Fable", "FINAL FANTASY VII REVELATION", "God of War Laufey", "Intergalactic: The Heretic Prophet", "KINGDOM HEARTS IV", "METRO 2039", "NO LAW", "Persona 6", "Resident Evil Veronica", "STRANGER THAN HEAVEN", "Stuntman: Hollywood", "The Expanse: Osiris Reborn", "The Witcher 4", "Tides of Annihilation", "Tomb Raider: Legacy of Atlantis", "Total War: WARHAMMER 40,000"]}
+    {"nombre": "El más esperado", "nominados": ["Alien: Isolation 2", "ANANTA", "Black Myth: Zhong Kui", "EXODUS", "Fable", "FINAL FANTASY VII REVELATION", "God of War Laufey", "Intergalactic: The Heretic Prophet", "KINGDOM HEARTS IV", "METRO 2039", "NO LAW", "Persona 6", "Resident Evil Veronica", "STRANGER THAN HEAVEN", "Stuntman: Hollywood", "The Expanse: Osiris Reborn", "The Witcher 4", "Tides of Annihilation", "Tomb Raider: Legacy of Atlantis", "Total War: WARHAMMER 40,000"]},
+    {"nombre": "Juego del Año · Absoluto", "nominados": ["007 First Light", "Big Walk", "CONTROL Resonant", "Crimson Desert", "Dispatch", "Forza Horizon 6", "Phantom Blade Zero", "Pokémon Pokopia", "PRAGMATA", "Resident Evil Requiem", "STAR WARS: Galactic Racer", "The Blood of Dawnwalker"]}
   ]
 }

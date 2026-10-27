@@ -18,7 +18,7 @@ CASA = ZoneInfo("Europe/Madrid")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # Donde viven los votos. **Una base propia y no una hoja de calculo**:
-# votar las 21 categorias son 21 escrituras por persona, y el cupo de
+# votar las 22 categorias son 22 escrituras por persona, y el cupo de
 # Google --300 por minuto-- lo comparten los otros cuatro bots con la
 # misma cuenta de servicio. Quince personas votando a la vez se lo comen
 # y lo que se rompe es Miss apuntando un aviso, no esto.

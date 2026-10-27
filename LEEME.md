@@ -3,15 +3,21 @@
 Bot de Telegram (@oXjotysbot) para que la gente de los grupos vote los premios. Se
 vota **en privado**, una categoría cada vez, a botonazos.
 
-**21 categorías y 168 nominados**, de la edición de 2026. La votación
+**22 categorías y 180 nominados**, de la edición de 2026. La votación
 oficial cerró el 23 de octubre y los ganadores se anuncian el 11 de
 noviembre: esta es la nuestra, con sus fechas.
+
+La vigesimosegunda llegó tarde a propósito: la **Ultimate Game of the
+Year** se anunció el 26 de octubre y allí se vota aparte. Aquí es
+«Juego del Año · Absoluto» y **va la última**, porque la clave de cada
+categoría es su número de orden y meterla delante mezclaría los votos
+ya dados.
 
 ## Cómo se vota
 
 Se le escribe al bot y él va sacando categorías. Cada nominado es un
 botón; al tocarlo **se guarda y salta a la siguiente**. No hay pantalla
-de confirmación a propósito: son veintiuna y cada toque de más es gente
+de confirmación a propósito: son veintidós y cada toque de más es gente
 que abandona.
 
 - **Se guarda al tocar, no al final.** Quien lo deje a medias vuelve y
@@ -92,7 +98,7 @@ diciembre de 2026, así que esto se configura en el panel.
 ## Tres cosas que se dan por sabidas
 
 **Los votos van en una base de datos y no en una hoja de cálculo.**
-Votar las 21 categorías son 21 escrituras por persona, y el cupo de
+Votar las 22 categorías son 22 escrituras por persona, y el cupo de
 Google —300 por minuto— lo comparten los otros cuatro bots con la misma
 cuenta de servicio. Quince personas votando a la vez se lo comen, y lo
 que se rompe entonces no es esto: es Miss apuntando un aviso.

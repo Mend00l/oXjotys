@@ -1,6 +1,6 @@
 """Lo que no puede romperse en la votacion.
 
-Son veintiuna categorias y 168 nominados: lo que se comprueba aqui es
+Son veintidos categorias y 180 nominados: lo que se comprueba aqui es
 que nadie se pierda por el camino --que la paginacion cuadre, que quien
 lo deje a medias retome por lo que le falta y que un boton viejo no
 cuele un voto que no es--.
@@ -18,11 +18,26 @@ from bot import premios, votacion  # noqa: E402
 
 # --- la lista -------------------------------------------------------------
 
-def test_estan_las_veintiuna_categorias():
+def test_estan_las_veintidos_categorias():
     """Si alguien toca premios.json y se deja media lista, se ve aqui y no
-    en mitad de la votacion."""
-    assert premios.cuantas() == 21
-    assert sum(len(c["nominados"]) for c in premios.CATEGORIAS) == 168
+    en mitad de la votacion.
+
+    Eran 21 hasta el 27-oct-2026, cuando se añadio «Juego del Año ·
+    Absoluto» --la Ultimate Game of the Year, que alli se anuncia aparte y
+    mas tarde-- con sus 12 nominados.
+    """
+    assert premios.cuantas() == 22
+    assert sum(len(c["nominados"]) for c in premios.CATEGORIAS) == 180
+
+
+def test_la_nueva_va_la_ultima():
+    """**El orden es la clave de cada categoria**, y los votos guardados
+    apuntan a ese numero. Meter una nueva por el medio --o delante, que es
+    donde iria por importancia-- renumeraria las de detras y cada voto ya
+    dado pasaria a contar en otra categoria."""
+    assert premios.nombre_de(0) == "Juego del Año · PC"
+    assert premios.nombre_de(20) == "El más esperado"
+    assert premios.nombre_de(21) == "Juego del Año · Absoluto"
 
 
 def test_ninguna_categoria_se_queda_sin_nominados():

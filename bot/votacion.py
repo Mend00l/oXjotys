@@ -1,6 +1,6 @@
 """La votacion: una categoria cada vez, en privado y a botonazos.
 
-**Se guarda al tocar, no al final.** Son veintiuna categorias: quien lo
+**Se guarda al tocar, no al final.** Son veintidos categorias: quien lo
 deje a medias tiene que poder volver y seguir donde estaba, y quien se
 equivoque tiene que poder cambiarlo. Las dos cosas salen de lo mismo,
 que cada toque escriba ya.
