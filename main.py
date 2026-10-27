@@ -23,8 +23,8 @@ from telegram.ext import (Application, CallbackQueryHandler, ChatMemberHandler,
 
 from bot import (aciertos, banco, premios, recuento, reloj, socios,
                  votacion)
-from config import (CASA, CIERRA_EL, DATABASE_URL, GRUPOS, TELEGRAM_TOKEN,
-                    lo_que_falta)
+from config import (CASA, CIERRA_EL, DATABASE_URL, ENLACE_DEL_GRUPO, GRUPOS,
+                    TELEGRAM_TOKEN, lo_que_falta)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -138,6 +138,13 @@ async def main() -> None:
     # Paso el 27-oct-2026 al abrir la votacion a la comunidad: la variable
     # ya decia una cosa y no habia forma de saber que decia el proceso.
     logger.info("Pueden votar los de: " + (", ".join(GRUPOS) or "NADIE"))
+    # Lo mismo con el sitio al que se manda a quien no esta. **El alias se
+    # escribe solo si es publico**: un enlace de invitacion --`t.me/+...`--
+    # da acceso al grupo y no tiene que quedar en el registro.
+    adonde = ((ENLACE_DEL_GRUPO if ENLACE_DEL_GRUPO.startswith("@")
+               else "un enlace de invitación") if ENLACE_DEL_GRUPO
+              else "ningún sitio (ENLACE_DEL_GRUPO sin poner)")
+    logger.info(f"A quien no está se le manda a: {adonde}")
 
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", votacion.empezar))

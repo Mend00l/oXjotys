@@ -49,7 +49,7 @@ TODAVIA_NO = ("🏆 Ganador no seleccionado.\n\nLos ganadores de cada categoría
 # clasificacion y en la pestaña del Sheet, y **se escribe una sola vez**:
 # con dos copias, el dia que se cambie una la tabla y el documento dejan
 # de llamar igual a la misma persona.
-SIN_NOMBRE = "Alguien sin @."
+SIN_NOMBRE = "Alguien sin @"
 
 
 def _es_edu(update: Update) -> bool:
