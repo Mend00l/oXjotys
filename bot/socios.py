@@ -23,7 +23,7 @@ import time
 
 from telegram import Bot
 
-from config import GRUPOS, MINUTOS_DE_MEMORIA
+from config import ADMIN_ID, GRUPOS, MINUTOS_DE_MEMORIA
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +64,15 @@ async def puede_votar(bot: Bot, usuario: int) -> bool:
     persona porque Telegram no contesta seria abrir la votacion entera
     por un grupo mal escrito.
     """
+    # **Edu vota siempre, sin mirar grupos.** Tiene que poder probar la
+    # votacion entera en privado antes de meter el bot en la comunidad, y
+    # para preguntar por alguien el bot tiene que estar YA dentro del
+    # grupo: sin esto, probar obliga a abrirlo antes de tiempo. Es un solo
+    # numero, asi que no deja entrar a nadie mas y no hay nada que
+    # acordarse de quitar despues.
+    if ADMIN_ID and usuario == ADMIN_ID:
+        return True
+
     recordado = _reciente(usuario)
     if recordado is not None:
         return recordado
