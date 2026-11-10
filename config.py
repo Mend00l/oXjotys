@@ -86,8 +86,13 @@ CIERRA_EL_CRUDO = (os.getenv("CIERRA_EL") or "").strip()
 # Y antes de cerrar seria peor: ver el marcador a mitad de votacion
 # arrastra el voto, que la gente vota a lo que va ganando. Por eso el
 # `/recuento` de Edu es solo suyo.
+#
+# **Las 23:59 del 11, no las 00:00.** Los premios se entregan A LO LARGO
+# del dia 11 y sin hora concreta, asi que abrirlo al empezar el dia
+# destripaba las categorias que aun no se habian dado. Puesto el
+# 10-nov-2026; antes era `datetime(2026, 11, 11)`, que es medianoche.
 RANKING_DESDE = (_cuando_cierra(os.getenv("RANKING_DESDE") or "")
-                 or datetime(2026, 11, 11, tzinfo=CASA))
+                 or datetime(2026, 11, 11, 23, 59, tzinfo=CASA))
 
 # Cuantos nominados por pantalla. Ocho porque la mayoria de categorias
 # tienen seis: asi casi todas se resuelven sin pasar pagina, y las de
