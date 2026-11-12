@@ -42,6 +42,17 @@ MEDALLAS = ["🥇", "🥈", "🥉"]
 # no necesita bajar doscientas lineas para ver que va el decimocuarto.
 CUANTOS_SE_VEN = 20
 
+# Lo que se le contesta a quien no es el dueño si pide la clasificacion.
+# **La tabla dejo de ser publica el 12-nov-2026**, y no por capricho: el
+# alias que se guarda es `username or full_name`, o sea que para la mayoria
+# ES su nombre de usuario de Telegram. Publicarlo es dar un listin: se
+# teclea en el buscador y se escribe a cualquiera. Censurarlo a medias no
+# vale --Telegram autocompleta por el principio--, asi que lo pidio Edu
+# cerrado entero.
+SOLO_EL_DUENO = ("🏆 La clasificación no es pública.\n\n"
+                 "Escríbeme /puntos en privado y te digo cuántas has "
+                 "acertado.")
+
 TODAVIA_NO = ("🏆 Ganador no seleccionado.\n\nLos ganadores de cada categoría "
               "se sabrán cuando se entreguen los Golden Joystick Awards.")
 
@@ -131,14 +142,32 @@ async def puntos(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def clasificacion(update: Update,
                         context: ContextTypes.DEFAULT_TYPE) -> None:
-    """`/clasificacion`: quien lleva mas aciertos. Para todos."""
+    """`/clasificacion`: quien lleva mas aciertos. **Solo para el dueño.**
+
+    Lo pidio Edu el 12-nov-2026: la tabla lleva los alias, y el alias es
+    `username or full_name`, o sea el nombre de usuario de Telegram de
+    quien lo tenga. Publicarla es repartir un listin de 161 personas.
+
+    **La puerta va antes que la de los ganadores** a proposito: a quien no
+    es el dueño se le contesta lo mismo haya ganadores o no. Si fuera al
+    reves, la respuesta diria si ya se han apuntado, que es contar algo
+    sobre un comando que no es suyo.
+    """
     mensaje = update.effective_message
+    if not _es_edu(update):
+        await mensaje.reply_text(SOLO_EL_DUENO)
+        return
+
     ganadores = await banco.ganadores()
     if not ganadores:
         await mensaje.reply_text(TODAVIA_NO)
         return
 
     tabla = await banco.clasificacion()
-    texto = _texto_de_la_tabla(tabla, len(ganadores), completo=_es_edu(update))
+    # Entera, que aqui ya solo llega el dueño. **Con esto, el recorte a
+    # `CUANTOS_SE_VEN` --el `completo=False`-- deja de alcanzarse fuera de
+    # las pruebas**: era para la tabla publica, que ya no existe. Se queda
+    # por si vuelve a abrirse, no porque haga falta hoy.
+    texto = _texto_de_la_tabla(tabla, len(ganadores), completo=True)
     for trozo in en_trozos(texto):
         await mensaje.reply_text(trozo, parse_mode=ParseMode.HTML)

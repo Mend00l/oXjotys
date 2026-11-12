@@ -21,6 +21,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from bot import aciertos  # noqa: E402
 
+# Un ADMIN_ID de mentira. `_es_edu` lee el global del modulo en cada
+# llamada, asi que se puede sustituir con monkeypatch.
+DUENO = 4242
+
 
 class _Mensaje:
     def __init__(self):
@@ -49,10 +53,82 @@ async def test_sin_ganadores_los_puntos_no_salen(monkeypatch):
 
 
 async def test_sin_ganadores_la_clasificacion_no_sale(monkeypatch):
+    """**Al dueño**, que desde el 12-nov-2026 es el unico que la pide."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
     monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({}))
     mensaje = _Mensaje()
-    await aciertos.clasificacion(_update(mensaje), None)
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO), None)
     assert mensaje.dicho[0] == aciertos.TODAVIA_NO
+
+
+# --- la clasificacion es solo del dueño (12-nov-2026) ---
+#
+# El alias que se guarda es `username or full_name`: para quien tiene
+# nombre de usuario en Telegram, la tabla ES una lista de handles con los
+# que escribirse. Edu la cerro por eso.
+
+async def test_la_clasificacion_no_se_la_doy_a_cualquiera(monkeypatch):
+    """**Y sin tocar la base**: a quien no es el dueño no se le cuenta nada."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
+    monkeypatch.setattr(aciertos.banco, "ganadores", _revienta)
+    monkeypatch.setattr(aciertos.banco, "clasificacion", _revienta)
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO + 1), None)
+    assert mensaje.dicho[0] == aciertos.SOLO_EL_DUENO
+
+
+async def test_al_que_no_es_el_dueno_le_contesta_igual_haya_ganadores(monkeypatch):
+    """**La respuesta no puede delatar si ya se apuntaron.** Por eso la
+    puerta del dueño va antes que la de los ganadores."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
+    monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({0: "Algo"}))
+    monkeypatch.setattr(aciertos.banco, "clasificacion", _revienta)
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO + 1), None)
+    assert mensaje.dicho[0] == aciertos.SOLO_EL_DUENO
+
+
+async def test_la_clasificacion_manda_a_puntos(monkeypatch):
+    """Que no se quede en un «no» seco: hay algo que si puede ver."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO + 1), None)
+    assert "/puntos" in mensaje.dicho[0]
+
+
+async def test_ningun_alias_se_escapa_al_que_no_es_el_dueno(monkeypatch):
+    """Lo que de verdad se cerro. Si alguna vez vuelve a filtrarse un
+    alias por aqui, esta es la que lo caza."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
+    monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({0: "Algo"}))
+    monkeypatch.setattr(aciertos.banco, "clasificacion",
+                        _devuelve([(7, "UnAliasQueNoDebeSalir", 5)]))
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO + 1), None)
+    assert not any("UnAliasQueNoDebeSalir" in t for t in mensaje.dicho)
+
+
+async def test_el_dueno_si_ve_la_tabla_entera(monkeypatch):
+    """Y **entera**, no recortada a veinte: ya no hay version publica."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", DUENO)
+    monkeypatch.setattr(aciertos.banco, "ganadores", _devuelve({0: "Algo"}))
+    monkeypatch.setattr(aciertos.banco, "clasificacion", _devuelve(_tabla(25)))
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO), None)
+    todo = "\n".join(mensaje.dicho)
+    assert "25." in todo
+    assert "más</i>" not in todo
+
+
+async def test_sin_admin_id_no_la_ve_nadie(monkeypatch):
+    """Si la variable se queda vacia, `_es_edu` da falso para todos y la
+    tabla no sale. **Cerrado de mas, no de menos**, que es el lado por el
+    que hay que fallar."""
+    monkeypatch.setattr(aciertos, "ADMIN_ID", 0)
+    monkeypatch.setattr(aciertos.banco, "ganadores", _revienta)
+    mensaje = _Mensaje()
+    await aciertos.clasificacion(_update(mensaje, usuario=DUENO), None)
+    assert mensaje.dicho[0] == aciertos.SOLO_EL_DUENO
 
 
 async def test_los_puntos_en_un_grupo_mandan_a_privado(monkeypatch):
