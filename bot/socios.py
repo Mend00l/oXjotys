@@ -114,6 +114,17 @@ async def puede_votar(bot: Bot, usuario: int) -> bool:
     if ADMIN_ID and usuario == ADMIN_ID:
         return True
 
+    # **Sin grupos puestos, vota todo el mundo.** Lo pidio Edu el
+    # 17-nov-2026 para los GOTY: quitar el requisito de estar en la
+    # comunidad es vaciar `GRUPOS` y ya.
+    #
+    # Antes vaciarla dejaba fuera a TODOS --el bucle de abajo no da ninguna
+    # vuelta y `pasa` se queda en False--, asi que la variable tenia dos
+    # significados y el que salia era el contrario del que parece. Ahora
+    # vacia quiere decir abierta, y el arranque lo canta.
+    if not GRUPOS:
+        return True
+
     recordado = _reciente(usuario)
     if recordado is not None:
         return recordado

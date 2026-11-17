@@ -133,8 +133,10 @@ def lo_que_falta() -> list[str]:
         falta.append("ADMIN_ID"
                      + (f" (esta puesto como {ADMIN_ID_CRUDO!r} y no es un "
                         f"numero)" if ADMIN_ID_CRUDO else ""))
-    if not GRUPOS:
-        falta.append("GRUPOS (sin esto no puede votar nadie)")
+    # Vacia ya no es un fallo: desde el 17-nov-2026 quiere decir «vota
+    # todo el mundo», que es como se quita el requisito de la comunidad.
+    # Ver `socios.puede_votar`. El arranque lo canta para que no pase
+    # desapercibido.
     if CIERRA_EL is None:
         falta.append("CIERRA_EL"
                      + (f" (esta puesto como {CIERRA_EL_CRUDO!r} y no se "

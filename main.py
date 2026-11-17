@@ -137,7 +137,8 @@ async def main() -> None:
     # sigue preguntando por el grupo viejo y por fuera no se distingue.
     # Paso el 27-oct-2026 al abrir la votacion a la comunidad: la variable
     # ya decia una cosa y no habia forma de saber que decia el proceso.
-    logger.info("Pueden votar los de: " + (", ".join(GRUPOS) or "NADIE"))
+    logger.info("Pueden votar los de: " + (", ".join(GRUPOS)
+                or "TODO EL MUNDO (GRUPOS vacia: sin requisito de comunidad)"))
     # Lo mismo con el sitio al que se manda a quien no esta. **El alias se
     # escribe solo si es publico**: un enlace de invitacion --`t.me/+...`--
     # da acceso al grupo y no tiene que quedar en el registro.
