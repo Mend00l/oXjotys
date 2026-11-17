@@ -1,9 +1,10 @@
 """Lo que no puede romperse en la votacion.
 
-Son veintidos categorias y 180 nominados: lo que se comprueba aqui es
-que nadie se pierda por el camino --que la paginacion cuadre, que quien
-lo deje a medias retome por lo que le falta y que un boton viejo no
-cuele un voto que no es--.
+Son veintinueve categorias y 148 nominados --los GOTY 2026, desde el
+17-nov-2026; antes eran los Golden Joystick, 22 y 180--: lo que se
+comprueba aqui es que nadie se pierda por el camino --que la paginacion
+cuadre, que quien lo deje a medias retome por lo que le falta y que un
+boton viejo no cuele un voto que no es--.
 """
 
 import sys
@@ -18,16 +19,16 @@ from bot import premios, votacion  # noqa: E402
 
 # --- la lista -------------------------------------------------------------
 
-def test_estan_las_veintidos_categorias():
+def test_estan_las_veintinueve_categorias():
     """Si alguien toca premios.json y se deja media lista, se ve aqui y no
     en mitad de la votacion.
 
-    Eran 21 hasta el 27-oct-2026, cuando se añadio «Juego del Año ·
-    Absoluto» --la Ultimate Game of the Year, que alli se anuncia aparte y
-    mas tarde-- con sus 12 nominados.
+    **Los GOTY 2026 desde el 17-nov-2026**: 29 categorias y 148 nominados,
+    sacados de la lista de Meristation. Antes eran los Golden Joystick, con
+    22 y 180.
     """
-    assert premios.cuantas() == 22
-    assert sum(len(c["nominados"]) for c in premios.CATEGORIAS) == 180
+    assert premios.cuantas() == 29
+    assert sum(len(c["nominados"]) for c in premios.CATEGORIAS) == 148
 
 
 def test_la_nueva_va_la_ultima():
@@ -35,9 +36,8 @@ def test_la_nueva_va_la_ultima():
     apuntan a ese numero. Meter una nueva por el medio --o delante, que es
     donde iria por importancia-- renumeraria las de detras y cada voto ya
     dado pasaria a contar en otra categoria."""
-    assert premios.nombre_de(0) == "Juego del Año · PC"
-    assert premios.nombre_de(20) == "El más esperado"
-    assert premios.nombre_de(21) == "Juego del Año · Absoluto"
+    assert premios.nombre_de(0) == "Juego del Año"
+    assert premios.nombre_de(28) == "Creador de Contenido del Año"
 
 
 def test_ninguna_categoria_se_queda_sin_nominados():
@@ -76,17 +76,32 @@ def test_una_sola_pagina_no_lleva_flechas():
     assert not any(r in ("‹", "›") for r in rotulos)
 
 
-def test_la_primera_pagina_no_tiene_flecha_atras():
-    larga = max(range(premios.cuantas()),
-                key=lambda i: len(premios.categoria(i)["nominados"]))
+# **Las dos de las flechas se prueban con una categoria inventada.**
+# Hasta el 17-nov-2026 cogian la mas larga de `premios.json` y daba igual,
+# porque los Golden Joystick tenian categorias de 10, 12 y 20 nominados. Los
+# GOTY 2026 no pasan de 6 y `POR_PAGINA` son 8: **ninguna categoria pagina**,
+# asi que buscando la mas larga ya no se probaba nada --las dos se pusieron
+# rojas pidiendo una flecha que no tenia por que salir--.
+#
+# Con una de mentira se prueba el mecanismo y no los nominados de este año,
+# que es lo que tiene que seguir funcionando el dia que vuelva a haber una
+# categoria de veinte.
+def _con_una_larga(monkeypatch, cuantos=20):
+    """Deja una categoria de `cuantos` nominados y devuelve su indice."""
+    larga = {"nombre": "De mentira", "nominados": [f"n{i}" for i in range(cuantos)]}
+    monkeypatch.setattr(premios, "CATEGORIAS", list(premios.CATEGORIAS) + [larga])
+    return premios.cuantas() - 1
+
+
+def test_la_primera_pagina_no_tiene_flecha_atras(monkeypatch):
+    larga = _con_una_larga(monkeypatch)
     rotulos = [b.text for fila in votacion._teclado(larga, 0, None).inline_keyboard
                for b in fila]
     assert "›" in rotulos and "‹" not in rotulos
 
 
-def test_la_ultima_pagina_no_tiene_flecha_adelante():
-    larga = max(range(premios.cuantas()),
-                key=lambda i: len(premios.categoria(i)["nominados"]))
+def test_la_ultima_pagina_no_tiene_flecha_adelante(monkeypatch):
+    larga = _con_una_larga(monkeypatch)
     ultima = votacion._paginas(len(premios.categoria(larga)["nominados"])) - 1
     rotulos = [b.text for fila in votacion._teclado(larga, ultima, None).inline_keyboard
                for b in fila]
@@ -158,7 +173,7 @@ def test_al_terminar_se_da_las_gracias():
     texto = votacion._texto_resumen(_todas())
 
     assert "¡Gracias por participar en los oXJOTYs!" in texto
-    assert "Golden Joystick Awards" in texto
+    assert "The Game Awards" in texto
     assert "finalice el plazo" in texto
 
 
@@ -205,7 +220,7 @@ def test_sin_votar_nada_no_hay_nada_que_cambiar():
 
 
 def test_las_categorias_salen_de_cinco_en_cinco():
-    """**No una lista de veintitres botones**, que es un muro. Paginadas,
+    """**No una lista de veintinueve botones**, que es un muro. Paginadas,
     con la misma forma que los nominados."""
     filas = votacion._teclado_cambiar(_todas(), 0).inline_keyboard
 
@@ -215,24 +230,25 @@ def test_las_categorias_salen_de_cinco_en_cinco():
     assert all(len(f) == 1 for f in categorias), "los nombres son largos"
 
     paso = filas[-2]
-    assert [b.text for b in paso] == ["1/5", "›"], "en la primera no hay ‹"
+    assert [b.text for b in paso] == ["1/6", "›"], "en la primera no hay ‹"
     assert filas[-1][0].callback_data == "r", "y se vuelve al resumen"
 
 
 def test_en_la_ultima_pagina_no_sobran_botones():
-    """22 categorias en paginas de cinco: la ultima lleva dos."""
-    filas = votacion._teclado_cambiar(_todas(), 4).inline_keyboard
+    """29 categorias en paginas de cinco: la ultima lleva cuatro."""
+    filas = votacion._teclado_cambiar(_todas(), 5).inline_keyboard
 
     categorias = [f for f in filas if f[0].callback_data.startswith("c:")]
-    assert [f[0].callback_data for f in categorias] == ["c:20", "c:21"]
-    assert [b.text for b in filas[-2]] == ["‹", "5/5"], "en la ultima no hay ›"
+    assert [f[0].callback_data for f in categorias] == [
+        "c:25", "c:26", "c:27", "c:28"]
+    assert [b.text for b in filas[-2]] == ["‹", "6/6"], "en la ultima no hay ›"
 
 
 def test_una_pagina_de_mas_no_revienta():
     """El boton puede venir de un mensaje viejo con mas categorias."""
     filas = votacion._teclado_cambiar(_todas(), 99).inline_keyboard
 
-    assert filas[0][0].callback_data == "c:20", "se queda en la ultima"
+    assert filas[0][0].callback_data == "c:25", "se queda en la ultima"
 
 
 def test_los_botones_dicen_cual_esta_votada():

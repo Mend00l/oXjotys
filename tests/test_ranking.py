@@ -41,7 +41,7 @@ async def test_antes_de_la_fecha_no_se_enseña(monkeypatch):
     await recuento.ranking(_update(mensaje), None)
 
     assert "Todavía no" in mensaje.dicho[0]
-    assert "Golden Joystick" in mensaje.dicho[0]
+    assert "The Game Awards" in mensaje.dicho[0]
 
 
 async def test_desde_la_fecha_sale_el_recuento(monkeypatch):

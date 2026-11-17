@@ -39,7 +39,7 @@ MARCA = "✅"
 # nadie tenga que preguntarlo.
 DESPEDIDA = ("🏆 <b>¡Gracias por participar en los oXJOTYs!</b>\n"
              "Diremos el ganador tras el recuento de votos de los "
-             "Golden Joystick Awards.")
+             "The Game Awards.")
 
 # Tres textos hablan de la fecha de cierre. **Sale de `CIERRA_EL` y no se
 # escribe a mano**: el dia que esa fecha cambie --otra edicion, una

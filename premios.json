@@ -1,34 +1,303 @@
 {
-  "fuente": "https://file770.com/golden-joystick-awards-2026-shortlist/ (12-oct-2026)",
+  "fuente": "https://as.com/meristation/noticias/nominados-al-goty-2026-todos-los-candidatos-a-los-premios-de-the-game-awards-f202611-n/ (17-nov-2026)",
   "notas": [
-    "44 edicion. La votacion oficial cierra el 23-oct-2026.",
-    "Ultimate Game of the Year se anuncio el 26-oct-2026 con 12 nominados y alli se vota aparte, hasta el 30-oct: aqui es «Juego del Año · Absoluto».",
-    "Esa va LA ULTIMA aunque sea la mas golosa: la clave de cada categoria es su numero de orden, y meterla arriba renumeraria las demas y mezclaria los votos ya dados.",
-    "Alli se eligen hasta tres por orden de preferencia; aqui se vota uno, como en las demas.",
-    "Los ganadores se anuncian el 11-nov-2026."
+    "The Game Awards 2026. La gala es el 10-dic en Los Angeles, que en España cae de madrugada del 11.",
+    "«Mejor Dirección de Arte» trae solo 3 nominados en la fuente; las demás llevan 5 o 6.",
+    "Los nombres son los de la fuente, sin tocar: el voto se guarda con el TEXTO, así que corregir uno después deja huérfanos los votos ya dados."
   ],
   "categorias": [
-    {"nombre": "Juego del Año · PC", "nominados": ["Big Walk", "Crimson Desert", "Escape from Tarkov", "Esoteric Ebb", "MECCHA CHAMELEON", "Mewgenics", "Order of the Sinking Star", "STAR WARS Zero Company", "The Blood of Dawnwalker", "Valheim"]},
-    {"nombre": "Juego del Año · Consola", "nominados": ["007 First Light", "Fire Emblem: Fortune's Weave", "Forza Horizon 6", "LEGO Batman: Legacy of the Dark Knight", "Nioh 3", "Onimusha: Way of the Sword", "Pokémon Pokopia", "PRAGMATA", "Resident Evil Requiem", "SAROS"]},
-    {"nombre": "Mejor narrativa", "nominados": ["007 First Light", "Dispatch", "Fire Emblem: Fortune's Weave", "SILENT HILL: Townfall", "The Blood of Dawnwalker", "ZERO PARADES: For Dead Spies"]},
-    {"nombre": "Mejor multijugador", "nominados": ["ARC Raiders", "Big Walk", "Marathon", "MARVEL Tōkon: Fighting Souls", "MECCHA CHAMELEON", "Valheim"]},
-    {"nombre": "Mejor diseño visual", "nominados": ["CONTROL Resonant", "Forza Horizon 6", "Orbitals", "Phonopolis", "Resonance: A Plague Tale Legacy", "SAROS"]},
-    {"nombre": "Mejor banda sonora", "nominados": ["007 First Light", "Crimson Desert", "Dispatch", "Lumines Arise", "Mewgenics", "Mixtape"]},
-    {"nombre": "Mejor diseño de audio", "nominados": ["Big Walk", "Marathon", "Onimusha: Way of the Sword", "Rhythm Heaven Groove", "SAROS", "STAR WARS: Galactic Racer"]},
-    {"nombre": "Mejor juego indie", "nominados": ["Big Walk", "Denshattack!", "Esoteric Ebb", "Mixtape", "Mouse: P.I. for Hire", "Order of the Sinking Star", "REANIMAL", "Sovereign Tower", "Titanium Court", "Valheim"]},
-    {"nombre": "Mejor indie autoeditado", "nominados": ["Cairn", "Fields of Mistria", "MECCHA CHAMELEON", "Mewgenics", "Mina the Hollower", "Perfect Tides: Station to Station", "Phonopolis", "Rhythm Doctor", "The Incident at Galley House", "Vampire Crawlers"]},
-    {"nombre": "Estudio del año", "nominados": ["CAPCOM", "Frogwares", "House House", "IO Interactive", "Nintendo EPD", "SQUARE ENIX"]},
-    {"nombre": "Mejor remake o remaster", "nominados": ["Assassin's Creed Black Flag Resynced", "Gothic 1 Remake", "METAL GEAR SOLID: MASTER COLLECTION Vol.2", "Star Fox", "The Witcher 3: Wild Hunt Remastered", "Trails in the Sky 2nd Chapter"]},
-    {"nombre": "Mejor expansión", "nominados": ["Cult of the Lamb: Woolhaven", "DAVE THE DIVER: In the Jungle", "DOOM: The Dark Ages · Revelations", "Quake: Dawn of the Machine", "The Alters: Last Variable", "World of Warcraft: Midnight"]},
-    {"nombre": "Mejor acceso anticipado", "nominados": ["Dead as Disco", "MENACE", "skate.", "Slay the Spire 2", "Subnautica 2", "WARDOGS"]},
-    {"nombre": "Mejor intérprete principal", "nominados": ["Aaron Paul · Dispatch", "Angela Sant'Albano · Resident Evil Requiem", "Anna Demetriou · Resonance: A Plague Tale Legacy", "Liam McIntyre · Marvel's Wolverine", "Patrick Gibson · 007 First Light", "Will de Renzy-Martin · The Blood of Dawnwalker"]},
-    {"nombre": "Mejor intérprete de reparto", "nominados": ["Frankie Kevich · CONTROL Resonant", "Grace Saif · PRAGMATA", "Lennie James · 007 First Light", "Terry O'Quinn · SILENT HILL: Townfall", "Troy Baker · Marvel's Wolverine", "Vic Michaelis · STAR WARS Zero Company"]},
-    {"nombre": "Mejor adaptación", "nominados": ["Devil May Cry (T2)", "Exit 8", "Fallout (T2)", "Iron Lung", "Mortal Kombat II", "Resident Evil"]},
-    {"nombre": "Mejor tráiler", "nominados": ["Battlefield 6 x Top Gun", "Big Walk · fecha de salida", "Cairn · lanzamiento", "MOUSE: P.I. For Hire · lanzamiento", "Prove You're Human · anuncio", "Resident Evil Requiem · Evil Has Always Had A Name"]},
-    {"nombre": "Mejor hardware", "nominados": ["Logitech G PRO X2 SUPERSTRIKE", "Razer Viper V4 Pro", "Secretlab ATLAS", "Sony INZONE M10S II", "Steam Controller", "Turtle Beach Stealth Pro II"]},
-    {"nombre": "Seguimos jugando · PC y consola", "nominados": ["Apex Legends", "Call of Duty: Warzone", "Fortnite", "GTA Online", "HELLDIVERS 2", "HITMAN World of Assassination", "Minecraft", "No Man's Sky", "Palworld", "The Elder Scrolls Online", "Warframe", "World of Warcraft"]},
-    {"nombre": "Seguimos jugando · Móvil", "nominados": ["Balatro", "Genshin Impact", "Honkai: Star Rail", "MARVEL SNAP", "MONOPOLY GO!", "NTE: Neverness to Everness", "Old School RuneScape", "Pokémon GO", "Roblox", "Sky: Children of the Light", "Rainbow Six Mobile", "Wuthering Waves"]},
-    {"nombre": "El más esperado", "nominados": ["Alien: Isolation 2", "ANANTA", "Black Myth: Zhong Kui", "EXODUS", "Fable", "FINAL FANTASY VII REVELATION", "God of War Laufey", "Intergalactic: The Heretic Prophet", "KINGDOM HEARTS IV", "METRO 2039", "NO LAW", "Persona 6", "Resident Evil Veronica", "STRANGER THAN HEAVEN", "Stuntman: Hollywood", "The Expanse: Osiris Reborn", "The Witcher 4", "Tides of Annihilation", "Tomb Raider: Legacy of Atlantis", "Total War: WARHAMMER 40,000"]},
-    {"nombre": "Juego del Año · Absoluto", "nominados": ["007 First Light", "Big Walk", "CONTROL Resonant", "Crimson Desert", "Dispatch", "Forza Horizon 6", "Phantom Blade Zero", "Pokémon Pokopia", "PRAGMATA", "Resident Evil Requiem", "STAR WARS: Galactic Racer", "The Blood of Dawnwalker"]}
+    {
+      "nombre": "Juego del Año",
+      "nominados": [
+        "GTA 6",
+        "The Legend of Zelda: Ocarina of Time",
+        "Phantom Blade Zero",
+        "007 First Light",
+        "Resident Evil: Requiem",
+        "Control Resonant"
+      ]
+    },
+    {
+      "nombre": "Mejor Dirección",
+      "nominados": [
+        "Control Resonant",
+        "GTA 6",
+        "Phantom Blade Zero",
+        "Pragmata",
+        "Resident Evil Requiem"
+      ]
+    },
+    {
+      "nombre": "Mejor Narrativa",
+      "nominados": [
+        "007: First Light",
+        "Control Resonant",
+        "GTA 6",
+        "Resident Evil Requiem",
+        "The Blood of Dawnwalker"
+      ]
+    },
+    {
+      "nombre": "Mejor Dirección de Arte",
+      "nominados": [
+        "GTA 6",
+        "Control Resonant",
+        "The Legend of Zelda: Ocarina of Time"
+      ]
+    },
+    {
+      "nombre": "Mejor Música y Banda Sonora",
+      "nominados": [
+        "Ace Combat 8: Wings of Theve",
+        "GTA 6",
+        "Mixtape",
+        "Phantom Blade Zero",
+        "The Legend of Zelda: Ocarina of Time"
+      ]
+    },
+    {
+      "nombre": "Mejor Actuación",
+      "nominados": [
+        "Angela Sant’Albano",
+        "Liam McIntyre",
+        "Manni L. Perez",
+        "Patrick Gibson",
+        "Rahul Kohli"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego Indie",
+      "nominados": [
+        "Big Walk",
+        "Cairn",
+        "Denshattack!",
+        "Mewgenics",
+        "Mina the Hollower"
+      ]
+    },
+    {
+      "nombre": "Mejor Debut Indie",
+      "nominados": [
+        "Dressmaker",
+        "Esoteric Ebb",
+        "Orbitals",
+        "Replaced",
+        "Mina the Hollower"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego para Móviles",
+      "nominados": [
+        "Arknights: Endfield",
+        "Monster Hunter Outlanders",
+        "Neverness to Everness",
+        "Pokémon Champions",
+        "Where Winds Meet"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego Multijugador",
+      "nominados": [
+        "Big Walk",
+        "Call of Duty: Modern Warfare 4",
+        "Gears of War: E-Day",
+        "Marathon",
+        "MECCHA CHAMELEON",
+        "Orbitals"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego RPG",
+      "nominados": [
+        "Final Fantasy Resonance",
+        "Fire Emblem Fortune’s Weave",
+        "Monster Hunter Stories 3: Twisted Reflection",
+        "The Blood of Dawnwalker",
+        "Trails in the Sky 2nd Chapter"
+      ]
+    },
+    {
+      "nombre": "Mejor Diseño de Audio",
+      "nominados": [
+        "Ace Combat 8: Wings of Theve",
+        "Control Resonant",
+        "GTA 6",
+        "Resident Evil Requiem",
+        "Star Wars: Galactic Racer"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego Servicio",
+      "nominados": [
+        "Arc Raiders",
+        "Final Fantasy XIV",
+        "Fortnite",
+        "No Man’s Sky",
+        "The Witcher 3: Wild Hunt"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Acción/Aventura",
+      "nominados": [
+        "007: First Light",
+        "The Legend of Zelda: Ocarina of Time",
+        "Control Resonant",
+        "GTA 6",
+        "Resident Evil Requiem",
+        "Pragmata"
+      ]
+    },
+    {
+      "nombre": "Mejor Adaptación de un Videojuego",
+      "nominados": [
+        "‘Cyberpunk: Edgerunners T2′",
+        "‘Fallout T2′",
+        "‘Mortal Kombat II’",
+        "‘Resident Evil’",
+        "‘Super Mario Galaxy: la película’"
+      ]
+    },
+    {
+      "nombre": "Mejor Apoyo a la Comunidad",
+      "nominados": [
+        "No Man’s Sky",
+        "Crimson Desert",
+        "Helldivers 2",
+        "The Witcher 3 Wild Hunt",
+        "Warframe"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Realidad Virtual o Aumentada",
+      "nominados": [
+        "Forefront",
+        "Little Nightmares VR",
+        "Into The Radius 2",
+        "TNNT: Empire City",
+        "Thief VR"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego Deportivo o de Velocidad",
+      "nominados": [
+        "EA FC 27",
+        "Forza Horizon 6",
+        "Screamer",
+        "Nintendo Switch Sports Resort",
+        "Star Wars: Galactic Racer"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Gestión y Estrategia",
+      "nominados": [
+        "Pokémon Pokopia",
+        "Mewgenics",
+        "Planet Zoo 2",
+        "Star Wars: Zero Company",
+        "Slay the Spire 2"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Lucha",
+      "nominados": [
+        "Marvel Tokon Fighting Souls",
+        "2XKO",
+        "Avatar Legends: The Fighting Game",
+        "Invincible VS",
+        "My Hero Academia: All’s Justice"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego Familiar",
+      "nominados": [
+        "Big Walk",
+        "Pokémon Pokopia",
+        "LEGO Batman: El Legado del Caballero Oscuro",
+        "Nintendo Switch Sports Resort",
+        "Yoshi and the Mysterious Book"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Acción",
+      "nominados": [
+        "Gears of War: E-Day",
+        "Saros",
+        "Ace Combat 8: Wings of Theve",
+        "Onimusha Way of the Sword",
+        "Phantom Blade Zero"
+      ]
+    },
+    {
+      "nombre": "Juegos por el Cambio Social",
+      "nominados": [
+        "Mixtape",
+        "Big Walk",
+        "Forever Ago",
+        "Lily’s World XD",
+        "Cairn",
+        "Life is Strange: Reunion"
+      ]
+    },
+    {
+      "nombre": "Juego Más Esperado",
+      "nominados": [
+        "Final Fantasy VII Revelation",
+        "Fable",
+        "God of War Laufey",
+        "Resident Evil Veronica",
+        "The Witcher 4"
+      ]
+    },
+    {
+      "nombre": "Premio a la Innovación y Accesibilidad",
+      "nominados": [
+        "Assassin’s Creed Black Flag Resynced",
+        "Gears of War: E-Day",
+        "Marvel: Lobezno",
+        "Forza Horizon 6",
+        "Rhythm Paradise Groove"
+      ]
+    },
+    {
+      "nombre": "Mejor Juego de Esports",
+      "nominados": [
+        "Counter-Strike 2",
+        "Valorant",
+        "DOTA 2",
+        "League of Legends",
+        "Mobile Legends: Bang Bang"
+      ]
+    },
+    {
+      "nombre": "Mejor Atleta de Esports",
+      "nominados": [
+        "Donk - Team Spirit",
+        "Erde - LOUD",
+        "Yatoro - Team Spirit",
+        "Chovy - Gen.G",
+        "ZywOo - Team Vitality"
+      ]
+    },
+    {
+      "nombre": "Mejor Equipo de Esports",
+      "nominados": [
+        "Gen.G - League of Legends",
+        "LOUD - Valorant",
+        "Team Spirit - DOTA 2",
+        "Team Falcons - Counter-Strike 2",
+        "Team Falcons - Rocket League",
+        "Team Vitality - Counter-Strike 2"
+      ]
+    },
+    {
+      "nombre": "Creador de Contenido del Año",
+      "nominados": [
+        "iShowSpeed",
+        "CDawg",
+        "Cellbit",
+        "LilSimsie",
+        "OhnePixel"
+      ]
+    }
   ]
 }

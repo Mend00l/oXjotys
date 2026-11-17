@@ -3,3 +3,7 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# La copia de los votos de la edicion anterior: lleva ids de Telegram y
+# alias, asi que se queda en el disco y no sube al repo.
+copias/

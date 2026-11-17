@@ -54,7 +54,7 @@ SOLO_EL_DUENO = ("🏆 La clasificación no es pública.\n\n"
                  "acertado.")
 
 TODAVIA_NO = ("🏆 Ganador no seleccionado.\n\nLos ganadores de cada categoría "
-              "se sabrán cuando se entreguen los Golden Joystick Awards.")
+              "se sabrán cuando se entreguen The Game Awards.")
 
 # Como se llama a quien voto sin tener alias de Telegram. Sale en la
 # clasificacion y en la pestaña del Sheet, y **se escribe una sola vez**:

@@ -155,7 +155,7 @@ async def ranking(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             # que ya deberia estar.
             f"🏆 Todavía no hay ganadores.\n\nEl ranking sale el "
             f"{RANKING_DESDE:%d/%m/%Y a las %H:%M}, cuando se sepan los "
-            f"ganadores de verdad en los Golden Joystick Awards.")
+            f"ganadores de verdad en The Game Awards.")
         return
     texto = await _texto_del_recuento(completo=False)
     for trozo in en_trozos(texto):

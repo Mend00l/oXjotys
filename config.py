@@ -79,20 +79,26 @@ CIERRA_EL = _cuando_cierra(os.getenv("CIERRA_EL") or "")
 CIERRA_EL_CRUDO = (os.getenv("CIERRA_EL") or "").strip()
 
 # Desde cuando `/ranking` enseña el resultado a todo el mundo. **No es la
-# fecha de cierre**: la nuestra cierra el 9 y la gala de los Golden
-# Joystick es el 11, asi que entre las dos hay dos dias en los que
-# enseñarlo seria destripar lo que todavia no se sabe.
+# fecha de cierre**: la nuestra cierra el 9-dic y la gala de The Game
+# Awards es el 10, asi que entre las dos hay un dia en el que enseñarlo
+# seria destripar lo que todavia no se sabe.
 #
 # Y antes de cerrar seria peor: ver el marcador a mitad de votacion
 # arrastra el voto, que la gente vota a lo que va ganando. Por eso el
 # `/recuento` de Edu es solo suyo.
 #
-# **Las 23:59 del 11, no las 00:00.** Los premios se entregan A LO LARGO
-# del dia 11 y sin hora concreta, asi que abrirlo al empezar el dia
-# destripaba las categorias que aun no se habian dado. Puesto el
-# 10-nov-2026; antes era `datetime(2026, 11, 11)`, que es medianoche.
+# **El dia 11 y no el 10, aunque la gala sea el 10.** The Game Awards se
+# da de noche en Los Angeles, asi que en España cae de madrugada del 11:
+# abrirlo "el dia de la gala" lo abriria con la gala sin empezar.
+#
+# Esto ya salio mal una vez y de la otra forma: en los Golden Joystick
+# estaba puesto a las 00:00 del dia de la gala --que entregaba los
+# premios a lo largo de TODO el dia-- y el ranking se abria con casi un
+# dia por delante. Se corrigio el 10-nov-2026 a las 23:59 de ese dia. La
+# regla que queda de las dos veces: **la hora se pone cuando se sabe que
+# la gala ha TERMINADO**, no cuando empieza ni cuando es "el dia".
 RANKING_DESDE = (_cuando_cierra(os.getenv("RANKING_DESDE") or "")
-                 or datetime(2026, 11, 11, 23, 59, tzinfo=CASA))
+                 or datetime(2026, 12, 11, 12, 0, tzinfo=CASA))
 
 # Cuantos nominados por pantalla. Ocho porque la mayoria de categorias
 # tienen seis: asi casi todas se resuelven sin pasar pagina, y las de
